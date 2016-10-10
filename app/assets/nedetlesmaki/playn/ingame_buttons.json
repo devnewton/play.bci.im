@@ -1,0 +1,82 @@
+{
+  "animations": [
+    {
+      "name": "show_menu_button",
+      "frames": [
+        {
+          "duration": 100,
+          "image": "show_menu_button.png",
+          "u1": 0.0,
+          "v1": 0.0,
+          "u2": 1.0,
+          "v2": 1.0
+        }
+      ]
+    },
+    {
+      "name": "show_menu_button_focused",
+      "frames": [
+        {
+          "duration": 100,
+          "image": "show_menu_button_focused.png",
+          "u1": 0.0,
+          "v1": 0.0,
+          "u2": 1.0,
+          "v2": 1.0
+        }
+      ]
+    },
+    {
+      "name": "reset_button",
+      "frames": [
+        {
+          "duration": 100,
+          "image": "reset_button.png",
+          "u1": 0.0,
+          "v1": 0.0,
+          "u2": 1.0,
+          "v2": 1.0
+        }
+      ]
+    },
+    {
+      "name": "reset_button_focused",
+      "frames": [
+        {
+          "duration": 100,
+          "image": "reset_button_focused.png",
+          "u1": 0.0,
+          "v1": 0.0,
+          "u2": 1.0,
+          "v2": 1.0
+        }
+      ]
+    },
+    {
+      "name": "rewind_button",
+      "frames": [
+        {
+          "duration": 100,
+          "image": "rewind_button.png",
+          "u1": 0.0,
+          "v1": 0.0,
+          "u2": 1.0,
+          "v2": 1.0
+        }
+      ]
+    },
+    {
+      "name": "rewind_button_focused",
+      "frames": [
+        {
+          "duration": 11,
+          "image": "rewind_button_focused.png",
+          "u1": 0.0,
+          "v1": 0.0,
+          "u2": 1.0,
+          "v2": 1.0
+        }
+      ]
+    }
+  ]
+}
