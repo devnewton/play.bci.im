@@ -152,14 +152,18 @@ require.register("ShmuprpgApp.ts", function(exports, require, module) {
 "use strict";
 const ShmuprpgGame_ts_1 = require("./ShmuprpgGame.ts");
 new ShmuprpgGame_ts_1.ShmuprpgGame();
-
-
+//# sourceMappingURL=ShmuprpgApp.js.map
 });
 
 require.register("ShmuprpgGame.ts", function(exports, require, module) {
 "use strict";
 const Intro_ts_1 = require("./states/Intro.ts");
 const Title_ts_1 = require("./states/Title.ts");
+const DemoEnding_ts_1 = require("./states/DemoEnding.ts");
+const Help_ts_1 = require("./states/Help.ts");
+const Options_ts_1 = require("./states/Options.ts");
+const KeyboardOptions_ts_1 = require("./states/KeyboardOptions.ts");
+const GamepadOptions_ts_1 = require("./states/GamepadOptions.ts");
 const Level_ts_1 = require("./states/Level.ts");
 const GameOver_ts_1 = require("./states/GameOver.ts");
 const Controls_ts_1 = require("./utils/Controls.ts");
@@ -171,8 +175,13 @@ class ShmuprpgGame extends Phaser.Game {
         });
         this.state.add('Intro', Intro_ts_1.Intro);
         this.state.add('Title', Title_ts_1.Title);
+        this.state.add('Help', Help_ts_1.Help);
+        this.state.add('Options', Options_ts_1.Options);
+        this.state.add('KeyboardOptions', KeyboardOptions_ts_1.KeyboardOptions);
+        this.state.add('GamepadOptions', GamepadOptions_ts_1.GamepadOptions);
         this.state.add('Level', Level_ts_1.Level);
         this.state.add('GameOver', GameOver_ts_1.GameOver);
+        this.state.add('DemoEnding', DemoEnding_ts_1.DemoEnding);
     }
     preloadGame() {
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -182,7 +191,7 @@ class ShmuprpgGame extends Phaser.Game {
     }
     createGame() {
         this.controls = new Controls_ts_1.Controls(this);
-        this.state.start('Level');
+        this.state.start('Title');
     }
     addSpriteAnimation(sprite, animationName, frameCount) {
         return sprite.animations.add(animationName, this.genAnimArray(animationName, frameCount));
@@ -196,11 +205,10 @@ class ShmuprpgGame extends Phaser.Game {
     }
 }
 exports.ShmuprpgGame = ShmuprpgGame;
-
-
+//# sourceMappingURL=ShmuprpgGame.js.map
 });
 
-require.register("entities/Bird.ts", function(exports, require, module) {
+;require.register("entities/Bird.ts", function(exports, require, module) {
 "use strict";
 class Bird extends Phaser.Sprite {
     constructor(game) {
@@ -238,11 +246,10 @@ class Bird extends Phaser.Sprite {
     }
 }
 exports.Bird = Bird;
-
-
+//# sourceMappingURL=Bird.js.map
 });
 
-require.register("entities/BirdFlock.ts", function(exports, require, module) {
+;require.register("entities/BirdFlock.ts", function(exports, require, module) {
 "use strict";
 const Bird_ts_1 = require("./Bird.ts");
 class BirdFlock extends Phaser.Group {
@@ -250,7 +257,11 @@ class BirdFlock extends Phaser.Group {
         super(target.game);
         this.flyRate = 1000;
         this.nextFlyTime = 0;
+        this.reset(target, maxBirds);
+    }
+    reset(target, maxBirds = 10) {
         this.target = target;
+        this.removeAll();
         for (let i = 0; i < maxBirds; ++i) {
             this.add(this.createBird());
         }
@@ -281,21 +292,23 @@ class BirdFlock extends Phaser.Group {
     }
 }
 exports.BirdFlock = BirdFlock;
-
-
+//# sourceMappingURL=BirdFlock.js.map
 });
 
-require.register("entities/Bullet.ts", function(exports, require, module) {
+;require.register("entities/Bullet.ts", function(exports, require, module) {
 "use strict";
 class Bullet extends Phaser.Sprite {
-    constructor(game) {
-        super(game, 0, 0, 'bullets');
-        game.addSpriteAnimation(this, 'bullet.red', 4);
+    constructor(game, animation = 'bullet.red', atlas = 'bullets') {
+        super(game, 0, 0, atlas);
+        this.bulletAnimation = animation;
+        game.addSpriteAnimation(this, this.bulletAnimation, 4);
         this.game.physics.enable(this, Phaser.Physics.ARCADE);
         this.anchor.setTo(0.5, 0.5);
         this.checkWorldBounds = true;
         this.outOfBoundsKill = true;
         this.exists = false;
+        this.health = 0;
+        this.alive = false;
     }
     fire(fromX, fromY, angle, speed, gravityX, gravityY) {
         this.reset(fromX, fromY, 1);
@@ -303,15 +316,238 @@ class Bullet extends Phaser.Sprite {
         this.game.physics.arcade.velocityFromRotation(angle, speed, this.body.velocity);
         this.angle = angle;
         this.body.gravity.set(gravityX, gravityY);
-        this.play('bullet.red', 4, true);
+        this.play(this.bulletAnimation, 4, true);
     }
 }
 exports.Bullet = Bullet;
-
-
+//# sourceMappingURL=Bullet.js.map
 });
 
-require.register("entities/Grobelin.ts", function(exports, require, module) {
+;require.register("entities/Bunny.ts", function(exports, require, module) {
+"use strict";
+const CircularGun_ts_1 = require("./CircularGun.ts");
+const b3 = require("../ia/decisions/b3.ts");
+class Bunny extends Phaser.Sprite {
+    constructor(game, pathfinder) {
+        super(game, 0, 0, 'bunny');
+        this.pathfinder = pathfinder;
+        this.game.physics.enable(this, Phaser.Physics.ARCADE);
+        this.anchor.setTo(0.5, 0.5);
+        this.checkWorldBounds = true;
+        this.outOfBoundsKill = true;
+        this.exists = false;
+        this.game.addSpriteAnimation(this, 'bunny.walk.front', 7);
+        this.game.addSpriteAnimation(this, 'bunny.walk.back', 7);
+        this.game.addSpriteAnimation(this, 'bunny.walk.right', 7);
+        this.game.addSpriteAnimation(this, 'bunny.walk.left', 7);
+        this.game.addSpriteAnimation(this, 'bunny.stand.front', 1);
+        this.game.addSpriteAnimation(this, 'bunny.stand.back', 1);
+        this.game.addSpriteAnimation(this, 'bunny.stand.right', 1);
+        this.game.addSpriteAnimation(this, 'bunny.stand.left', 1);
+        this.birdExplosion = this.game.add.sprite(this.x, this.y, 'bird-explosion');
+        this.birdExplosion.anchor.setTo(0.5, 0.5);
+        this.birdExplosion.exists = false;
+        const explodeAnimation = this.birdExplosion.animations.add('explode');
+        explodeAnimation.killOnComplete = true;
+        this.weapon = new CircularGun_ts_1.CircularGun(this.game);
+    }
+    static preload(game) {
+        game.load.atlasXML('bunny', 'sprites/lpc/bunny/bunny.png', 'sprites/lpc/bunny/bunny.xml');
+    }
+    appears(fromX, fromY) {
+        const beforeBunny = this.game.add.sprite(fromX, fromY, 'before-bird');
+        beforeBunny.anchor.setTo(0.5, 0.5);
+        const beforeBunnyAnimation = beforeBunny.animations.add('appears');
+        beforeBunnyAnimation.onComplete.add(() => {
+            beforeBunny.destroy();
+            this.reset(fromX, fromY, 10);
+            this.blackboard = new BunnyBlackboard();
+        });
+        beforeBunnyAnimation.play(4, false);
+    }
+    update() {
+        super.update();
+        if (this.exists) {
+            this.executeBehaviorTree();
+        }
+    }
+    executeBehaviorTree() {
+        BunnyB3.get().tick(this, this.blackboard);
+    }
+    damage(amount) {
+        super.damage(amount);
+        if (!this.damageTween) {
+            this.damageTween = this.game.add.tween(this).from({ tint: 0xFF0000 }).to({ tint: 0xFFFFFF }, 500, Phaser.Easing.Linear.None, true, 0, 4, false);
+            this.damageTween.onComplete.add(() => this.damageTween = null);
+        }
+        this.blackboard.fearLevel = 60;
+        return this;
+    }
+    kill() {
+        super.kill();
+        if (this.damageTween) {
+            this.damageTween.stop(true);
+        }
+        this.birdExplosion.reset(this.x, this.y);
+        this.birdExplosion.play('explode', 8, false);
+        return this;
+    }
+}
+exports.Bunny = Bunny;
+class BunnyBlackboard extends b3.Blackboard {
+    constructor(...args) {
+        super(...args);
+        this.fearLevel = 60;
+    }
+}
+class BunnyB3 extends b3.Tree {
+    constructor() {
+        super();
+        this.root = this.selector(new ActionFollowPath(), this.sequence(new ConditionFeelSafe(), new ActionAttack()), new ActionSearchAPath());
+    }
+    static get() {
+        return this.singleton || (this.singleton = new BunnyB3());
+    }
+}
+class ActionFollowPath extends b3.Action {
+    tick(t) {
+        let me = t.me;
+        let currentPathPointTarget = t.blackboard.currentPathPointTarget;
+        if (currentPathPointTarget) {
+            this.moveToXY(me, currentPathPointTarget.x, currentPathPointTarget.y, 300);
+            if (Phaser.Math.distance(me.body.center.x, me.body.center.y, currentPathPointTarget.x, currentPathPointTarget.y) < me.body.halfWidth) {
+                t.blackboard.currentPathPointTarget = null;
+            }
+        }
+        else {
+            let path = t.blackboard.path || [];
+            t.blackboard.currentPathPointTarget = path.shift();
+            if (path.length == 0) {
+                me.body.velocity.x = 0;
+                me.body.velocity.y = 0;
+                return b3.NodeState.FAILURE;
+            }
+        }
+        this.animate(me);
+        return b3.NodeState.RUNNING;
+    }
+    animate(me) {
+        if (Math.abs(me.body.velocity.x) > Math.abs(me.body.velocity.y)) {
+            if (me.body.velocity.x < 0) {
+                me.play("bunny.walk.left", 8, false);
+            }
+            else if (me.body.velocity.x > 0) {
+                me.play("bunny.walk.right", 8, false);
+            }
+            else if (me.body.velocity.y < 0) {
+                me.play("bunny.walk.back", 8, false);
+            }
+            else if (me.body.velocity.y > 0) {
+                me.play("bunny.walk.front", 8, false);
+            }
+            else {
+                me.play("bunny.stand.front", 0, false);
+            }
+        }
+        else {
+            if (me.body.velocity.y < 0) {
+                me.play("bunny.walk.back", 8, false);
+            }
+            else if (me.body.velocity.y > 0) {
+                me.play("bunny.walk.front", 8, false);
+            }
+            else if (me.body.velocity.x < 0) {
+                me.play("bunny.walk.left", 8, false);
+            }
+            else if (me.body.velocity.x > 0) {
+                me.play("bunny.walk.right", 8, false);
+            }
+            else {
+                me.play("bunny.stand.front", 0, false);
+            }
+        }
+    }
+    moveToXY(me, x, y, speed = 60) {
+        var angle = Math.atan2(y - me.body.center.y, x - me.body.center.x);
+        me.body.velocity.x = Math.cos(angle) * speed;
+        me.body.velocity.y = Math.sin(angle) * speed;
+    }
+}
+class ActionSearchAPath extends b3.Action {
+    constructor(...args) {
+        super(...args);
+        this.thinking = new b3.BlackboardKey();
+    }
+    tick(t) {
+        let thinking = t.blackboard.get(this.thinking) || false;
+        let me = t.me;
+        if (!thinking) {
+            t.blackboard.set(this.thinking, true);
+            let targetPos = me.pathfinder.randomWalkablePos();
+            me.pathfinder.findPath(me.body.center.x, me.body.center.y, targetPos.x, targetPos.y, (path) => {
+                t.blackboard.path = path || [];
+                t.blackboard.set(this.thinking, false);
+            });
+        }
+        let path = t.blackboard.path || [];
+        return path.length > 0 ? b3.NodeState.SUCCESS : b3.NodeState.RUNNING;
+    }
+}
+class ConditionFeelSafe extends b3.Action {
+    tick(t) {
+        let fearLevel = t.blackboard.fearLevel > 0 ? t.blackboard.fearLevel-- : 0;
+        if (fearLevel == 0) {
+            return b3.NodeState.SUCCESS;
+        }
+        if (fearLevel == 60) {
+            return b3.NodeState.FAILURE;
+        }
+        return b3.NodeState.RUNNING;
+    }
+}
+class ActionAttack extends b3.Action {
+    tick(t) {
+        t.me.weapon.fire(t.me.centerX, t.me.centerY);
+        return b3.NodeState.RUNNING;
+    }
+}
+//# sourceMappingURL=Bunny.js.map
+});
+
+;require.register("entities/CircularGun.ts", function(exports, require, module) {
+"use strict";
+const Bullet_ts_1 = require("./Bullet.ts");
+class CircularGun extends Phaser.Group {
+    constructor(game, maxBullets = 64, bulletsByShots = 8) {
+        super(game);
+        this.bulletSpeed = 300;
+        this.fireRate = 800;
+        this.nextFireTime = 0;
+        this.bulletsByShots = bulletsByShots;
+        for (let i = 0; i < maxBullets; ++i) {
+            this.add(this.createBullet());
+        }
+    }
+    createBullet() {
+        return new Bullet_ts_1.Bullet(this.game);
+    }
+    fire(fromX, fromY) {
+        if (this.game.time.time >= this.nextFireTime) {
+            for (let b = 1; b <= this.bulletsByShots; ++b) {
+                const bullet = this.getFirstExists(false);
+                if (bullet) {
+                    bullet.fire(fromX, fromY, b * 2 * Math.PI / this.bulletsByShots, this.bulletSpeed, 0, 0);
+                }
+            }
+            this.nextFireTime = this.game.time.time + this.fireRate;
+        }
+    }
+}
+exports.CircularGun = CircularGun;
+//# sourceMappingURL=CircularGun.js.map
+});
+
+;require.register("entities/Grobelin.ts", function(exports, require, module) {
 "use strict";
 const b3 = require("../ia/decisions/b3.ts");
 class Grobelin extends Phaser.Sprite {
@@ -327,16 +563,13 @@ class Grobelin extends Phaser.Sprite {
         this.grobelinDeath.anchor.setTo(0.5, 0.5);
         this.grobelinDeath.exists = false;
     }
-    getVulnerableRectangles() {
-        return [new Phaser.Rectangle(this.x, this.y, this.width, this.height)];
-    }
     appears(fromX, fromY, target) {
         const beforeGrobelin = this.game.add.sprite(fromX, fromY, 'before-bird');
         beforeGrobelin.anchor.setTo(0.5, 0.5);
         const beforeGrobelinAnimation = beforeGrobelin.animations.add('appears');
         beforeGrobelinAnimation.onComplete.add(() => {
             beforeGrobelin.destroy();
-            this.reset(fromX, fromY, 50);
+            this.reset(fromX, fromY, 20);
             this.body.setSize(16, 16, 24, 48);
             this.body.collideWorldBounds = true;
             this.blackboard = new GrobelinBlackboard();
@@ -346,7 +579,9 @@ class Grobelin extends Phaser.Sprite {
     }
     kill() {
         super.kill();
-        this.damageTween.stop(true);
+        if (this.damageTween) {
+            this.damageTween.stop(true);
+        }
         this.tint = 0xFFFFFF;
         this.grobelinDeath.reset(this.x, this.y);
         this.grobelinDeath.animations.play("lpc.hurt", 6, false).killOnComplete = true;
@@ -542,8 +777,7 @@ class ActionAttackEnemy extends b3.Action {
         }
     }
 }
-
-
+//# sourceMappingURL=Grobelin.js.map
 });
 
 ;require.register("entities/GrobelinHorde.ts", function(exports, require, module) {
@@ -555,7 +789,11 @@ class GrobelinHorde extends Phaser.Group {
         this.appearsRate = 10000;
         this.nextAppearsTime = 0;
         this.pathfinder = pathFinder;
+        this.reset(target, maxGrobelins);
+    }
+    reset(target, maxGrobelins = 4) {
         this.target = target;
+        this.removeAll();
         for (let i = 0; i < maxGrobelins; ++i) {
             this.add(this.createGrobelin());
         }
@@ -594,13 +832,13 @@ class GrobelinHorde extends Phaser.Group {
     }
 }
 exports.GrobelinHorde = GrobelinHorde;
-
-
+//# sourceMappingURL=GrobelinHorde.js.map
 });
 
-require.register("entities/Hero.ts", function(exports, require, module) {
+;require.register("entities/Hero.ts", function(exports, require, module) {
 "use strict";
 const MachineGun_ts_1 = require("./MachineGun.ts");
+const Bullet_ts_1 = require("./Bullet.ts");
 class Hero extends Phaser.Sprite {
     constructor(game) {
         super(game, game.world.centerX, game.world.centerY, 'tobira');
@@ -617,12 +855,12 @@ class Hero extends Phaser.Sprite {
         this.game.physics.enable(this, Phaser.Physics.ARCADE);
         this.body.setSize(16, 16, 24, 48);
         this.body.collideWorldBounds = true;
-        this.weapon = new MachineGun_ts_1.MachineGun(this.game);
+        this.weapon = new HeroMachineGun(this.game);
         this.game.add.existing(this.weapon);
     }
     static preload(game) {
         game.load.atlasXML('tobira', 'sprites/lpc/characters/tobira.png', 'sprites/lpc/characters/lpc.xml');
-        game.load.atlasXML('bullets', 'sprites/lpc/shootemup/effects01.png', 'sprites/lpc/shootemup/bullets.xml');
+        game.load.atlasXML('bullets', 'sprites/devnewton/bullets.png', 'sprites/devnewton/bullets.xml');
     }
     update() {
         super.update();
@@ -673,14 +911,18 @@ class Hero extends Phaser.Sprite {
     }
 }
 exports.Hero = Hero;
-
-
+class HeroMachineGun extends MachineGun_ts_1.CircularGun {
+    createBullet() {
+        return new Bullet_ts_1.Bullet(this.game, 'bullet.blue');
+    }
+}
+//# sourceMappingURL=Hero.js.map
 });
 
-require.register("entities/MachineGun.ts", function(exports, require, module) {
+;require.register("entities/MachineGun.ts", function(exports, require, module) {
 "use strict";
 const Bullet_ts_1 = require("./Bullet.ts");
-class MachineGun extends Phaser.Group {
+class CircularGun extends Phaser.Group {
     constructor(game, maxBullets = 64) {
         super(game);
         this.bulletSpeed = 600;
@@ -703,12 +945,11 @@ class MachineGun extends Phaser.Group {
         }
     }
 }
-exports.MachineGun = MachineGun;
-
-
+exports.CircularGun = CircularGun;
+//# sourceMappingURL=MachineGun.js.map
 });
 
-require.register("entities/Spider.ts", function(exports, require, module) {
+;require.register("entities/Spider.ts", function(exports, require, module) {
 "use strict";
 const b3 = require("../ia/decisions/b3.ts");
 const MachineGun_ts_1 = require("./MachineGun.ts");
@@ -724,10 +965,7 @@ class Spider extends Phaser.Sprite {
         this.spiderDeath = this.game.add.sprite(this.x, this.y, 'spider');
         this.spiderDeath.anchor.setTo(0.5, 0.5);
         this.spiderDeath.exists = false;
-        this.machineGun = new MachineGun_ts_1.MachineGun(this.game, 1);
-    }
-    getVulnerableRectangles() {
-        return [new Phaser.Rectangle(this.x, this.y, this.width, this.height)];
+        this.machineGun = new MachineGun_ts_1.CircularGun(this.game, 1);
     }
     appears(fromX, fromY, target) {
         const beforeSpider = this.game.add.sprite(fromX, fromY, 'before-bird');
@@ -1016,8 +1254,7 @@ class ActionAttackEnemy extends b3.Action {
         }
     }
 }
-
-
+//# sourceMappingURL=Spider.js.map
 });
 
 ;require.register("entities/SpiderHorde.ts", function(exports, require, module) {
@@ -1029,7 +1266,11 @@ class SpiderHorde extends Phaser.Group {
         this.appearsRate = 10000;
         this.nextAppearsTime = 0;
         this.pathfinder = pathFinder;
+        this.reset(target, maxSpiders);
+    }
+    reset(target, maxSpiders = 4) {
         this.target = target;
+        this.removeAll();
         for (let i = 0; i < maxSpiders; ++i) {
             this.add(this.createSpider());
         }
@@ -1071,17 +1312,10 @@ class SpiderHorde extends Phaser.Group {
     }
 }
 exports.SpiderHorde = SpiderHorde;
-
-
+//# sourceMappingURL=SpiderHorde.js.map
 });
 
-require.register("entities/features/Vulnerable.ts", function(exports, require, module) {
-"use strict";
-
-
-});
-
-require.register("ia/decisions/b3.ts", function(exports, require, module) {
+;require.register("ia/decisions/b3.ts", function(exports, require, module) {
 "use strict";
 class Tree {
     tick(me, blackboard) {
@@ -1227,11 +1461,10 @@ class Condition extends Leaf {
     }
 }
 exports.Condition = Condition;
-
-
+//# sourceMappingURL=b3.js.map
 });
 
-require.register("ia/services/Pathfinder.ts", function(exports, require, module) {
+;require.register("ia/services/Pathfinder.ts", function(exports, require, module) {
 "use strict";
 const EasyStar = require('easystarjs');
 class Pathfinder {
@@ -1272,6 +1505,10 @@ class Pathfinder {
     findPath(startX, startY, endX, endY, callback) {
         const tileStart = this.map.getTileWorldXY(startX, startY);
         const tileEnd = this.findNearestWalkableTile(endX, endY);
+        if (!tileStart) {
+            console.log('cannot find path starting out of the map: (' + startX + ';' + startY + ')');
+            return;
+        }
         if (tileEnd) {
             this.easystar.findPath(tileStart.x, tileStart.y, tileEnd.x, tileEnd.y, (path) => {
                 let worldPath;
@@ -1319,11 +1556,10 @@ class Pathfinder {
     }
 }
 exports.Pathfinder = Pathfinder;
-
-
+//# sourceMappingURL=Pathfinder.js.map
 });
 
-require.register("states/AbstractState.ts", function(exports, require, module) {
+;require.register("states/AbstractState.ts", function(exports, require, module) {
 "use strict";
 class AbstractState extends Phaser.State {
     constructor() {
@@ -1342,11 +1578,32 @@ class AbstractState extends Phaser.State {
     }
 }
 exports.AbstractState = AbstractState;
-
-
+//# sourceMappingURL=AbstractState.js.map
 });
 
-require.register("states/GameOver.ts", function(exports, require, module) {
+;require.register("states/DemoEnding.ts", function(exports, require, module) {
+"use strict";
+const AbstractState_ts_1 = require("./AbstractState.ts");
+const MenuButton_ts_1 = require("../ui/MenuButton.ts");
+class DemoEnding extends AbstractState_ts_1.AbstractState {
+    constructor() {
+        super();
+    }
+    preload() {
+        this.game.load.image('demo_ending', 'help/demo_ending.png');
+        MenuButton_ts_1.MenuButton.preload(this.game);
+    }
+    create() {
+        super.create();
+        let logo = this.game.add.sprite(0, 0, 'demo_ending');
+        new MenuButton_ts_1.MenuButton(this.game, "Back", 500, 900, () => this.game.state.start('Title'));
+    }
+}
+exports.DemoEnding = DemoEnding;
+//# sourceMappingURL=DemoEnding.js.map
+});
+
+;require.register("states/GameOver.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_ts_1 = require("./AbstractState.ts");
 class GameOver extends AbstractState_ts_1.AbstractState {
@@ -1362,11 +1619,104 @@ class GameOver extends AbstractState_ts_1.AbstractState {
     }
 }
 exports.GameOver = GameOver;
-
-
+//# sourceMappingURL=GameOver.js.map
 });
 
-require.register("states/Intro.ts", function(exports, require, module) {
+;require.register("states/GamepadOptions.ts", function(exports, require, module) {
+"use strict";
+const AbstractState_ts_1 = require("./AbstractState.ts");
+const MenuButton_ts_1 = require("../ui/MenuButton.ts");
+class GamepadOptions extends AbstractState_ts_1.AbstractState {
+    constructor() {
+        super();
+    }
+    preload() {
+        MenuButton_ts_1.MenuButton.preload(this.game);
+    }
+    create() {
+        super.create();
+        let title = this.game.add.text(this.game.world.centerX, 0, 'Choose gamepad', { font: "68px monospace", fill: 'white' });
+        title.scale.x = 2;
+        title.scale.y = 2;
+        title.anchor.setTo(0.5, 0);
+        let subtitle = this.game.add.text(0, 0, 'Move stick or press button to show gamepad number', { font: "60px monospace", fill: 'white' });
+        subtitle.y = this.game.world.height - subtitle.height;
+        new GamepadMenuButton(this.input.gamepad.pad1, 0xFF6666, "Gamepad 1", 500, 200, () => {
+            this.game.controls.usePad(this.input.gamepad.pad1);
+            this.game.state.start('Options');
+        });
+        new GamepadMenuButton(this.input.gamepad.pad2, 0x66FF66, "Gamepad 2", 500, 350, () => {
+            this.game.controls.usePad(this.input.gamepad.pad2);
+            this.game.state.start('Options');
+        });
+        new GamepadMenuButton(this.input.gamepad.pad3, 0x6666FF, "Gamepad 3", 500, 500, () => {
+            this.game.controls.usePad(this.input.gamepad.pad3);
+            this.game.state.start('Options');
+        });
+        new GamepadMenuButton(this.input.gamepad.pad4, 0xFFFF66, "Gamepad 4", 500, 650, () => {
+            this.game.controls.usePad(this.input.gamepad.pad4);
+            this.game.state.start('Options');
+        });
+        new MenuButton_ts_1.MenuButton(this.game, "Back", 500, 800, () => this.game.state.start('Options'));
+    }
+}
+exports.GamepadOptions = GamepadOptions;
+class GamepadMenuButton extends MenuButton_ts_1.MenuButton {
+    constructor(pad, activePadTint, label, x, y, callback) {
+        super(pad.game, label, x, y, callback);
+        this.pad = pad;
+        this.activePadTint = activePadTint;
+    }
+    update() {
+        super.update();
+        if (this.isPadActive()) {
+            this.tint = this.activePadTint;
+        }
+        else {
+            this.tint = 0xFFFFFF;
+        }
+    }
+    isPadActive() {
+        for (let b = 0; b < 16; ++b) {
+            let button = this.pad.getButton(b);
+            if (button && button.isDown) {
+                return true;
+            }
+        }
+        for (let a = 0; a < 16; ++a) {
+            if (Math.abs(this.pad.axis(a)) > this.pad.deadZone) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+//# sourceMappingURL=GamepadOptions.js.map
+});
+
+;require.register("states/Help.ts", function(exports, require, module) {
+"use strict";
+const AbstractState_ts_1 = require("./AbstractState.ts");
+const MenuButton_ts_1 = require("../ui/MenuButton.ts");
+class Help extends AbstractState_ts_1.AbstractState {
+    constructor() {
+        super();
+    }
+    preload() {
+        this.game.load.image('help', 'help/help.png');
+        MenuButton_ts_1.MenuButton.preload(this.game);
+    }
+    create() {
+        super.create();
+        let logo = this.game.add.sprite(0, 0, 'help');
+        new MenuButton_ts_1.MenuButton(this.game, "Back", 500, 900, () => this.game.state.start('Title'));
+    }
+}
+exports.Help = Help;
+//# sourceMappingURL=Help.js.map
+});
+
+;require.register("states/Intro.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_ts_1 = require("./AbstractState.ts");
 class Intro extends AbstractState_ts_1.AbstractState {
@@ -1385,28 +1735,67 @@ class Intro extends AbstractState_ts_1.AbstractState {
     }
 }
 exports.Intro = Intro;
-
-
+//# sourceMappingURL=Intro.js.map
 });
 
-require.register("states/Level.ts", function(exports, require, module) {
+;require.register("states/KeyboardOptions.ts", function(exports, require, module) {
+"use strict";
+const AbstractState_ts_1 = require("./AbstractState.ts");
+const MenuButton_ts_1 = require("../ui/MenuButton.ts");
+class KeyboardOptions extends AbstractState_ts_1.AbstractState {
+    constructor() {
+        super();
+    }
+    preload() {
+        MenuButton_ts_1.MenuButton.preload(this.game);
+    }
+    create() {
+        super.create();
+        let logo = this.game.add.text(this.game.world.centerX, 0, 'Choose keyboard layout', { font: "68px monospace", fill: 'white' });
+        logo.scale.x = 2;
+        logo.scale.y = 2;
+        logo.anchor.setTo(0.5, 0);
+        new MenuButton_ts_1.MenuButton(this.game, "Azerty zsqd", 500, 300, () => {
+            this.game.controls.useAzertyLayout();
+            this.game.state.start('Options');
+        });
+        new MenuButton_ts_1.MenuButton(this.game, "Qwerty wsad", 500, 450, () => {
+            this.game.controls.useQwertyLayout();
+            this.game.state.start('Options');
+        });
+        new MenuButton_ts_1.MenuButton(this.game, "Other ⬆⬇⬅➡", 500, 600, () => {
+            this.game.controls.useOtherLayout();
+            this.game.state.start('Options');
+        });
+        new MenuButton_ts_1.MenuButton(this.game, "Back", 500, 750, () => this.game.state.start('Options'));
+    }
+}
+exports.KeyboardOptions = KeyboardOptions;
+//# sourceMappingURL=KeyboardOptions.js.map
+});
+
+;require.register("states/Level.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_ts_1 = require("./AbstractState.ts");
 const Hero_ts_1 = require("../entities/Hero.ts");
 const BirdFlock_ts_1 = require("../entities/BirdFlock.ts");
 const GrobelinHorde_ts_1 = require("../entities/GrobelinHorde.ts");
 const SpiderHorde_ts_1 = require("../entities/SpiderHorde.ts");
+const Bunny_ts_1 = require("../entities/Bunny.ts");
 const Pathfinder_ts_1 = require("../ia/services/Pathfinder.ts");
 const DamageResolver_ts_1 = require("../utils/DamageResolver.ts");
+const Dialog_ts_1 = require("../ui/Dialog.ts");
 class Level extends AbstractState_ts_1.AbstractState {
     constructor() {
         super();
+        this.shouldCheckBunnyLiving = false;
     }
     preload() {
         BirdFlock_ts_1.BirdFlock.preload(this.game);
         GrobelinHorde_ts_1.GrobelinHorde.preload(this.game);
         SpiderHorde_ts_1.SpiderHorde.preload(this.game);
         Hero_ts_1.Hero.preload(this.game);
+        Bunny_ts_1.Bunny.preload(this.game);
         this.game.load.tilemap('map', 'levels/level1.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('terrains', 'sprites/lpc/terrains/terrains.png');
         this.game.load.image('cottage', 'sprites/lpc/thatched-roof-cottage/cottage.png');
@@ -1414,6 +1803,7 @@ class Level extends AbstractState_ts_1.AbstractState {
         this.game.load.image('doors', 'sprites/lpc/windows-doors/doors.png');
         this.game.load.image('windows', 'sprites/lpc/windows-doors/windows.png');
         this.game.load.image('obj_misk_atlas', 'sprites/lpc/tile-atlas2/obj_misk_atlas.png');
+        Dialog_ts_1.Dialog.preload(this.game);
     }
     create() {
         super.create();
@@ -1448,58 +1838,206 @@ class Level extends AbstractState_ts_1.AbstractState {
         this.pathfinder = new Pathfinder_ts_1.Pathfinder(map);
         this.hero = new Hero_ts_1.Hero(this.game);
         this.game.add.existing(this.hero);
-        this.birdFlock = new BirdFlock_ts_1.BirdFlock(this.hero);
+        this.birdFlock = new BirdFlock_ts_1.BirdFlock(this.hero, 0);
         this.game.add.existing(this.birdFlock);
-        this.grobelinHorde = new GrobelinHorde_ts_1.GrobelinHorde(this.hero, this.pathfinder);
+        this.grobelinHorde = new GrobelinHorde_ts_1.GrobelinHorde(this.hero, this.pathfinder, 0);
         this.game.add.existing(this.grobelinHorde);
-        this.spiderHorde = new SpiderHorde_ts_1.SpiderHorde(this.hero, this.pathfinder);
+        this.spiderHorde = new SpiderHorde_ts_1.SpiderHorde(this.hero, this.pathfinder, 0);
         this.game.add.existing(this.spiderHorde);
+        this.bunnyGroup = this.game.add.group();
+        this.startDialog();
+    }
+    startDialog() {
+        let dialog = new Dialog_ts_1.Dialog(this.game, "What a beautiful day! I do not regret leaving the magic university to live in this farm with my wife, Clementine.");
+        dialog.onFinishCallback = () => {
+            dialog.text = "Speaking of her, she should be back from the forest soon. I hope she catched something good for diner.";
+            dialog.onFinishCallback = () => {
+                dialog.text = "Mmh that's strange, I am suddently feeling magic around and not a good one...";
+                dialog.onFinishCallback = () => {
+                    dialog.destroy();
+                    this.startAction();
+                };
+            };
+        };
+    }
+    endingDialog() {
+        let dialog = new Dialog_ts_1.Dialog(this.game, "What was that? It looks like somebody has invoked monsters and sent them to... me?");
+        dialog.onFinishCallback = () => {
+            dialog.text = "Clementine! I must go to the forest, maybe she is in danger!";
+            dialog.onFinishCallback = () => {
+                this.game.state.start('DemoEnding');
+            };
+        };
+    }
+    startAction() {
+        this.game.time.events.add(1000, () => this.grobelinHorde.reset(this.hero, 3));
+        this.game.time.events.add(20 * 1000, () => this.spiderHorde.reset(this.hero, 4));
+        this.game.time.events.add(40 * 1000, () => this.birdFlock.reset(this.hero, 10));
+        this.game.time.events.add(60 * 1000, () => {
+            this.birdFlock.flyRate = Number.MAX_VALUE;
+            this.spiderHorde.appearsRate = Number.MAX_VALUE;
+            this.grobelinHorde.appearsRate = Number.MAX_VALUE;
+        });
+        this.game.time.events.add(80 * 1000, () => {
+            for (let i = 0; i < 4; ++i) {
+                let pos = this.pathfinder.randomWalkablePos();
+                let bunny = new Bunny_ts_1.Bunny(this.game, this.pathfinder);
+                bunny.appears(pos.x, pos.y);
+                this.bunnyGroup.add(bunny);
+            }
+            this.shouldCheckBunnyLiving = true;
+        });
     }
     update() {
         this.pathfinder.update();
-        this.hero.update();
         this.game.physics.arcade.collide(this.hero, this.collisionSprites);
         this.resolveWeaponsEffects();
+        if (this.shouldCheckBunnyLiving && this.bunnyGroup.countLiving() == 0) {
+            this.shouldCheckBunnyLiving = false;
+            this.game.time.events.add(3 * 1000, () => {
+                this.endingDialog();
+            });
+        }
     }
     resolveWeaponsEffects() {
-        this.damageResolver.resolve(this.birdFlock, this.hero.weapon);
-        this.damageResolver.resolve(this.hero, this.birdFlock);
-        this.damageResolver.resolve(this.hero.weapon, this.grobelinHorde);
-        this.damageResolver.resolve(this.hero.weapon, this.spiderHorde);
+        this.damageResolver.groupVersusGroup(this.hero.weapon, this.bunnyGroup);
+        for (let bunny of this.bunnyGroup.children) {
+            this.damageResolver.spriteVersusGroup(this.hero, bunny.weapon);
+        }
+        this.damageResolver.spriteVersusGroup(this.hero, this.birdFlock);
+        this.damageResolver.groupVersusGroup(this.hero.weapon, this.birdFlock);
+        this.damageResolver.spriteVersusGroup(this.hero, this.birdFlock);
+        this.damageResolver.groupVersusGroup(this.hero.weapon, this.grobelinHorde);
+        this.damageResolver.groupVersusGroup(this.hero.weapon, this.spiderHorde);
         for (let spider of this.spiderHorde.children) {
-            this.damageResolver.resolve(this.hero, spider.machineGun);
+            this.damageResolver.spriteVersusGroup(this.hero, spider.machineGun);
         }
     }
     render() {
     }
 }
 exports.Level = Level;
-
-
+//# sourceMappingURL=Level.js.map
 });
 
-require.register("states/Title.ts", function(exports, require, module) {
+;require.register("states/Options.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_ts_1 = require("./AbstractState.ts");
+const MenuButton_ts_1 = require("../ui/MenuButton.ts");
+class Options extends AbstractState_ts_1.AbstractState {
+    constructor() {
+        super();
+    }
+    preload() {
+        MenuButton_ts_1.MenuButton.preload(this.game);
+    }
+    create() {
+        super.create();
+        let logo = this.game.add.text(this.game.world.centerX, 0, 'Options', { font: "120px monospace", fill: 'white' });
+        logo.scale.x = 2;
+        logo.scale.y = 2;
+        logo.anchor.setTo(0.5, 0);
+        let y = 150;
+        new MenuButton_ts_1.MenuButton(this.game, "Keyboard", 500, y += 150, () => this.game.state.start('KeyboardOptions'));
+        if (this.input.gamepad.supported) {
+            new MenuButton_ts_1.MenuButton(this.game, "Gamepad", 500, y += 150, () => this.game.state.start('GamepadOptions'));
+        }
+        new MenuButton_ts_1.MenuButton(this.game, "Back", 500, y += 150, () => this.game.state.start('Title'));
+    }
+}
+exports.Options = Options;
+//# sourceMappingURL=Options.js.map
+});
+
+;require.register("states/Title.ts", function(exports, require, module) {
+"use strict";
+const AbstractState_ts_1 = require("./AbstractState.ts");
+const MenuButton_ts_1 = require("../ui/MenuButton.ts");
 class Title extends AbstractState_ts_1.AbstractState {
     constructor() {
         super();
     }
     preload() {
         this.game.load.image('logo', 'title/logo.png');
+        MenuButton_ts_1.MenuButton.preload(this.game);
     }
     create() {
         super.create();
-        var logo = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');
-        logo.anchor.setTo(0.5, 0.5);
+        let logo = this.game.add.sprite(this.game.world.centerX, 0, 'logo');
+        logo.scale.x = 2;
+        logo.scale.y = 2;
+        logo.anchor.setTo(0.5, 0);
+        new MenuButton_ts_1.MenuButton(this.game, "Start", 500, 300, () => this.game.state.start('Level'));
+        new MenuButton_ts_1.MenuButton(this.game, "Options", 500, 450, () => this.game.state.start('Options'));
+        new MenuButton_ts_1.MenuButton(this.game, "Help", 500, 600, () => this.game.state.start('Help'));
     }
 }
 exports.Title = Title;
-
-
+//# sourceMappingURL=Title.js.map
 });
 
-require.register("utils/Controls.ts", function(exports, require, module) {
+;require.register("ui/Dialog.ts", function(exports, require, module) {
+"use strict";
+class Dialog extends Phaser.Group {
+    constructor(game, text) {
+        super(game);
+        this.passButtonWasDown = false;
+        let dialogBackground = game.add.image(0, 600, "dialog_bg", null, this);
+        dialogBackground.alpha = 0.9;
+        this.dialogText = game.add.text(game.world.centerX, 630, text, {
+            font: "64px monospace",
+            fill: "white",
+            wordWrap: true,
+            wordWrapWidth: 1900
+        }, this);
+        this.dialogText.anchor.x = 0.5;
+        game.add.existing(this);
+        this.controls = game.controls;
+    }
+    set text(text) {
+        this.dialogText.text = text;
+    }
+    static preload(game) {
+        game.load.image('dialog_bg', 'dialog/dialog_bg.png');
+    }
+    update() {
+        let passButtonIsDown = this.controls.isPassDialogButtonDown();
+        if (this.passButtonWasDown && !passButtonIsDown) {
+            this.passButtonWasDown = false;
+            if (this.onFinishCallback) {
+                this.onFinishCallback();
+            }
+        }
+        else {
+            this.passButtonWasDown = passButtonIsDown;
+        }
+    }
+}
+exports.Dialog = Dialog;
+//# sourceMappingURL=Dialog.js.map
+});
+
+;require.register("ui/MenuButton.ts", function(exports, require, module) {
+"use strict";
+class MenuButton extends Phaser.Button {
+    constructor(game, label, x, y, callback) {
+        super(game, x, y, 'menu-buttons', callback, null, 'over', 'out', 'down');
+        this.labelText = new Phaser.Text(this.game, 140, 15, label, { font: "64px monospace", fill: 'white' });
+        this.addChild(this.labelText);
+        game.add.existing(this);
+    }
+    setText(text) {
+        this.labelText.setText(text);
+    }
+    static preload(game) {
+        game.load.atlasXML('menu-buttons', 'menu/buttons.png', 'menu/buttons.xml');
+    }
+}
+exports.MenuButton = MenuButton;
+//# sourceMappingURL=MenuButton.js.map
+});
+
+;require.register("utils/Controls.ts", function(exports, require, module) {
 "use strict";
 class Controls {
     constructor(game) {
@@ -1507,9 +2045,39 @@ class Controls {
         game.input.gamepad.start();
         this.kb = game.input.keyboard;
         this.pad = game.input.gamepad.pad1;
+        if (localStorage.getItem('keyboard.layout') == 'qwerty') {
+            this.useQwertyLayout();
+        }
+        else {
+            this.useAzertyLayout();
+        }
+    }
+    usePad(pad) {
+        this.pad = pad;
+    }
+    useAzertyLayout() {
+        this.keyCodeUP = Phaser.KeyCode.Z;
+        this.keyCodeDOWN = Phaser.KeyCode.S;
+        this.keyCodeLEFT = Phaser.KeyCode.Q;
+        this.keyCodeRIGHT = Phaser.KeyCode.D;
+        localStorage.setItem('keyboard.layout', 'azerty');
+    }
+    useQwertyLayout() {
+        this.keyCodeUP = Phaser.KeyCode.W;
+        this.keyCodeDOWN = Phaser.KeyCode.S;
+        this.keyCodeLEFT = Phaser.KeyCode.A;
+        this.keyCodeRIGHT = Phaser.KeyCode.D;
+        localStorage.setItem('keyboard.layout', 'qwerty');
+    }
+    useOtherLayout() {
+        this.keyCodeUP = Phaser.KeyCode.UP;
+        this.keyCodeDOWN = Phaser.KeyCode.DOWN;
+        this.keyCodeLEFT = Phaser.KeyCode.LEFT;
+        this.keyCodeRIGHT = Phaser.KeyCode.RIGHT;
+        localStorage.setItem('keyboard.layout', 'other');
     }
     shootingAngle(shooterX, shooterY) {
-        return this.firstNonNull(this.shootingAngleFromPointer(shooterX, shooterY), this.shootingAngleFromPad(), this.shootingFromKeyboard());
+        return this.firstNonNull(this.shootingAngleFromPointer(shooterX, shooterY), this.shootingAngleFromPad());
     }
     firstNonNull(...values) {
         for (let value of values) {
@@ -1525,7 +2093,7 @@ class Controls {
             return Phaser.Math.angleBetween(shooterX, shooterY, pointer.worldX, pointer.worldY);
         }
         else {
-            return this.shootingFromKeyboard();
+            return null;
         }
     }
     shootingAngleFromPad() {
@@ -1540,113 +2108,75 @@ class Controls {
             return null;
         }
     }
-    shootingFromKeyboard() {
-        let dx = 0;
-        if (this.kb.isDown(Phaser.KeyCode.J)) {
-            dx = -1;
-        }
-        else if (this.kb.isDown(Phaser.KeyCode.L)) {
-            dx = 1;
-        }
-        let dy = 0;
-        if (this.kb.isDown(Phaser.KeyCode.I)) {
-            dy = -1;
-        }
-        else if (this.kb.isDown(Phaser.KeyCode.K)) {
-            dy = 1;
-        }
-        if (dx != 0 || dy != 0) {
-            return Phaser.Math.angleBetween(0, 0, dx, dy);
-        }
-        else {
-            return null;
-        }
-    }
     isGoingUp() {
         return this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_UP)
             || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) < -this.pad.deadZone
             || this.kb.isDown(Phaser.KeyCode.UP)
-            || this.kb.isDown(Phaser.KeyCode.Z);
+            || this.kb.isDown(this.keyCodeUP);
     }
     isGoingDown() {
         return this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_DOWN)
             || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) > this.pad.deadZone
             || this.kb.isDown(Phaser.KeyCode.DOWN)
-            || this.kb.isDown(Phaser.KeyCode.S);
+            || this.kb.isDown(this.keyCodeDOWN);
     }
     isGoingLeft() {
         return this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT)
             || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -this.pad.deadZone
             || this.kb.isDown(Phaser.KeyCode.LEFT)
-            || this.kb.isDown(Phaser.KeyCode.Q);
+            || this.kb.isDown(this.keyCodeLEFT);
     }
     isGoingRight() {
         return this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT)
             || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > this.pad.deadZone
             || this.kb.isDown(Phaser.KeyCode.RIGHT)
-            || this.kb.isDown(Phaser.KeyCode.D);
+            || this.kb.isDown(this.keyCodeRIGHT);
+    }
+    isPassDialogButtonDown() {
+        return this.game.input.activePointer.isDown
+            || this.pad.isDown(Phaser.Gamepad.XBOX360_A);
     }
 }
 exports.Controls = Controls;
-
-
+//# sourceMappingURL=Controls.js.map
 });
 
-require.register("utils/DamageResolver.ts", function(exports, require, module) {
+;require.register("utils/DamageResolver.ts", function(exports, require, module) {
 "use strict";
 class DamageResolver {
     constructor(game) {
         this.game = game;
     }
-    resolve(spriteOrGroupA, spriteOrGroupB) {
-        this.game.physics.arcade.overlap(spriteOrGroupA, spriteOrGroupB, (a, b) => {
-            const vulnerableA = a;
-            if (DamageResolver.checkIfSpritesIntersect(a, b)) {
-                a.damage(1);
-                b.damage(1);
+    groupVersusGroup(groupA, groupB) {
+        for (let spriteA of groupA.children) {
+            if (spriteA instanceof Phaser.Sprite) {
+                this.spriteVersusGroup(spriteA, groupB);
             }
-        });
-    }
-    static checkIfSpritesIntersect(a, b) {
-        let vulnerableRectangleOfA = DamageResolver.getVulnerableRectanglesOf(a);
-        let vulnerableRectangleOfB = DamageResolver.getVulnerableRectanglesOf(b);
-        if (vulnerableRectangleOfA || vulnerableRectangleOfB) {
-            vulnerableRectangleOfA = vulnerableRectangleOfA || [new Phaser.Rectangle(a.x, a.y, a.width, a.height)];
-            vulnerableRectangleOfB = vulnerableRectangleOfB || [new Phaser.Rectangle(b.x, b.y, b.width, b.height)];
-            return this.checkIfRectanglesIntersect(vulnerableRectangleOfA, vulnerableRectangleOfB);
-        }
-        else {
-            return true;
         }
     }
-    static checkIfRectanglesIntersect(rectanglesA, rectanglesB) {
-        for (let a of rectanglesA) {
-            for (let b of rectanglesB) {
-                if (a.intersects(b, 1)) {
-                    return true;
+    spriteVersusGroup(spriteA, groupB) {
+        if (spriteA.exists) {
+            for (let spriteB of groupB.children) {
+                if (spriteB instanceof Phaser.Sprite) {
+                    this.spriteVersusSprite(spriteA, spriteB);
                 }
             }
         }
-        return false;
     }
-    static getVulnerableRectanglesOf(s) {
-        let result;
-        if (DamageResolver.isVulnerable(s)) {
-            result = s.getVulnerableRectangles();
+    spriteVersusSprite(spriteA, spriteB) {
+        if (spriteA.exists && spriteB.exists && spriteA.overlap(spriteB)) {
+            spriteA.damage(1);
+            spriteB.damage(1);
         }
-        return result;
-    }
-    static isVulnerable(s) {
-        return s.getVulnerableRectangles != undefined;
     }
 }
 exports.DamageResolver = DamageResolver;
-
-
+//# sourceMappingURL=DamageResolver.js.map
 });
 
-require.register("___globals___", function(exports, require, module) {
+;require.register("___globals___", function(exports, require, module) {
   
 });})();require('___globals___');
 
 require('ShmuprpgApp');
+//# sourceMappingURL=app.js.map

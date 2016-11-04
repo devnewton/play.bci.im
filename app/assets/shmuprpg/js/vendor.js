@@ -1065,3 +1065,5 @@ require.alias("easystarjs/src/easystar.js", "easystarjs");require.register("___g
   
 });})();require('___globals___');
 
+
+//# sourceMappingURL=vendor.js.map
