@@ -150,38 +150,44 @@ var __makeRelativeRequire = function(require, mappings, pref) {
 };
 require.register("ShmuprpgApp.ts", function(exports, require, module) {
 "use strict";
-const ShmuprpgGame_ts_1 = require("./ShmuprpgGame.ts");
-new ShmuprpgGame_ts_1.ShmuprpgGame();
+const ShmuprpgGame_1 = require("./ShmuprpgGame");
+new ShmuprpgGame_1.ShmuprpgGame();
 //# sourceMappingURL=ShmuprpgApp.js.map
 });
 
 require.register("ShmuprpgGame.ts", function(exports, require, module) {
 "use strict";
-const Intro_ts_1 = require("./states/Intro.ts");
-const Title_ts_1 = require("./states/Title.ts");
-const DemoEnding_ts_1 = require("./states/DemoEnding.ts");
-const Help_ts_1 = require("./states/Help.ts");
-const Options_ts_1 = require("./states/Options.ts");
-const KeyboardOptions_ts_1 = require("./states/KeyboardOptions.ts");
-const GamepadOptions_ts_1 = require("./states/GamepadOptions.ts");
-const Level_ts_1 = require("./states/Level.ts");
-const GameOver_ts_1 = require("./states/GameOver.ts");
-const Controls_ts_1 = require("./utils/Controls.ts");
+const Intro_1 = require("./states/Intro");
+const Title_1 = require("./states/Title");
+const DemoEnding_1 = require("./states/DemoEnding");
+const Help_1 = require("./states/Help");
+const Options_1 = require("./states/Options");
+const KeyboardOptions_1 = require("./states/KeyboardOptions");
+const KeyboardOptionsBindKey_1 = require("./states/KeyboardOptionsBindKey");
+const GamepadOptions_1 = require("./states/GamepadOptions");
+const GamepadOptionsLayout_1 = require("./states/GamepadOptionsLayout");
+const GamepadOptionsBindAxis_1 = require("./states/GamepadOptionsBindAxis");
+const Level_1 = require("./states/Level");
+const GameOver_1 = require("./states/GameOver");
+const Controls_1 = require("./utils/Controls");
 class ShmuprpgGame extends Phaser.Game {
     constructor() {
         super(1920, 1080, Phaser.CANVAS, 'game', {
             preload: () => this.preloadGame(),
             create: () => this.createGame()
         });
-        this.state.add('Intro', Intro_ts_1.Intro);
-        this.state.add('Title', Title_ts_1.Title);
-        this.state.add('Help', Help_ts_1.Help);
-        this.state.add('Options', Options_ts_1.Options);
-        this.state.add('KeyboardOptions', KeyboardOptions_ts_1.KeyboardOptions);
-        this.state.add('GamepadOptions', GamepadOptions_ts_1.GamepadOptions);
-        this.state.add('Level', Level_ts_1.Level);
-        this.state.add('GameOver', GameOver_ts_1.GameOver);
-        this.state.add('DemoEnding', DemoEnding_ts_1.DemoEnding);
+        this.state.add('Intro', Intro_1.Intro);
+        this.state.add('Title', Title_1.Title);
+        this.state.add('Help', Help_1.Help);
+        this.state.add('Options', Options_1.Options);
+        this.state.add('GamepadOptionsLayout', GamepadOptionsLayout_1.GamepadOptionsLayout);
+        this.state.add('GamepadOptionsBindAxis', GamepadOptionsBindAxis_1.GamepadOptionsBindAxis);
+        this.state.add('KeyboardOptions', KeyboardOptions_1.KeyboardOptions);
+        this.state.add('KeyboardOptionsBindKey', KeyboardOptionsBindKey_1.KeyboardOptionsBindKey);
+        this.state.add('GamepadOptions', GamepadOptions_1.GamepadOptions);
+        this.state.add('Level', Level_1.Level);
+        this.state.add('GameOver', GameOver_1.GameOver);
+        this.state.add('DemoEnding', DemoEnding_1.DemoEnding);
     }
     preloadGame() {
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -190,7 +196,7 @@ class ShmuprpgGame extends Phaser.Game {
         this.scale.pageAlignVertically = true;
     }
     createGame() {
-        this.controls = new Controls_ts_1.Controls(this);
+        this.controls = new Controls_1.Controls(this);
         this.state.start('Title');
     }
     addSpriteAnimation(sprite, animationName, frameCount) {
@@ -251,7 +257,7 @@ exports.Bird = Bird;
 
 ;require.register("entities/BirdFlock.ts", function(exports, require, module) {
 "use strict";
-const Bird_ts_1 = require("./Bird.ts");
+const Bird_1 = require("./Bird");
 class BirdFlock extends Phaser.Group {
     constructor(target, maxBirds = 10) {
         super(target.game);
@@ -279,7 +285,7 @@ class BirdFlock extends Phaser.Group {
         this.fly(x, y, angle);
     }
     createBird() {
-        return new Bird_ts_1.Bird(this.game);
+        return new Bird_1.Bird(this.game);
     }
     fly(fromX, fromY, angle) {
         if (this.game.time.time >= this.nextFlyTime) {
@@ -325,8 +331,8 @@ exports.Bullet = Bullet;
 
 ;require.register("entities/Bunny.ts", function(exports, require, module) {
 "use strict";
-const CircularGun_ts_1 = require("./CircularGun.ts");
-const b3 = require("../ia/decisions/b3.ts");
+const CircularGun_1 = require("./CircularGun");
+const b3 = require("../ia/decisions/b3");
 class Bunny extends Phaser.Sprite {
     constructor(game, pathfinder) {
         super(game, 0, 0, 'bunny');
@@ -349,7 +355,7 @@ class Bunny extends Phaser.Sprite {
         this.birdExplosion.exists = false;
         const explodeAnimation = this.birdExplosion.animations.add('explode');
         explodeAnimation.killOnComplete = true;
-        this.weapon = new CircularGun_ts_1.CircularGun(this.game);
+        this.weapon = new CircularGun_1.CircularGun(this.game);
     }
     static preload(game) {
         game.load.atlasXML('bunny', 'sprites/lpc/bunny/bunny.png', 'sprites/lpc/bunny/bunny.xml');
@@ -516,7 +522,7 @@ class ActionAttack extends b3.Action {
 
 ;require.register("entities/CircularGun.ts", function(exports, require, module) {
 "use strict";
-const Bullet_ts_1 = require("./Bullet.ts");
+const Bullet_1 = require("./Bullet");
 class CircularGun extends Phaser.Group {
     constructor(game, maxBullets = 64, bulletsByShots = 8) {
         super(game);
@@ -529,7 +535,7 @@ class CircularGun extends Phaser.Group {
         }
     }
     createBullet() {
-        return new Bullet_ts_1.Bullet(this.game);
+        return new Bullet_1.Bullet(this.game);
     }
     fire(fromX, fromY) {
         if (this.game.time.time >= this.nextFireTime) {
@@ -549,7 +555,7 @@ exports.CircularGun = CircularGun;
 
 ;require.register("entities/Grobelin.ts", function(exports, require, module) {
 "use strict";
-const b3 = require("../ia/decisions/b3.ts");
+const b3 = require("../ia/decisions/b3");
 class Grobelin extends Phaser.Sprite {
     constructor(game, pathfinder) {
         super(game, 0, 0, 'grobelin');
@@ -782,7 +788,7 @@ class ActionAttackEnemy extends b3.Action {
 
 ;require.register("entities/GrobelinHorde.ts", function(exports, require, module) {
 "use strict";
-const Grobelin_ts_1 = require("./Grobelin.ts");
+const Grobelin_1 = require("./Grobelin");
 class GrobelinHorde extends Phaser.Group {
     constructor(target, pathFinder, maxGrobelins = 4) {
         super(target.game);
@@ -806,7 +812,7 @@ class GrobelinHorde extends Phaser.Group {
         this.appears();
     }
     createGrobelin() {
-        const grobelin = new Grobelin_ts_1.Grobelin(this.game, this.pathfinder);
+        const grobelin = new Grobelin_1.Grobelin(this.game, this.pathfinder);
         const game = this.game;
         game.addSpriteAnimation(grobelin.grobelinDeath, 'lpc.hurt', 6);
         game.addSpriteAnimation(grobelin, 'lpc.hurt', 6);
@@ -837,8 +843,8 @@ exports.GrobelinHorde = GrobelinHorde;
 
 ;require.register("entities/Hero.ts", function(exports, require, module) {
 "use strict";
-const MachineGun_ts_1 = require("./MachineGun.ts");
-const Bullet_ts_1 = require("./Bullet.ts");
+const MachineGun_1 = require("./MachineGun");
+const Bullet_1 = require("./Bullet");
 class Hero extends Phaser.Sprite {
     constructor(game) {
         super(game, game.world.centerX, game.world.centerY, 'tobira');
@@ -911,9 +917,9 @@ class Hero extends Phaser.Sprite {
     }
 }
 exports.Hero = Hero;
-class HeroMachineGun extends MachineGun_ts_1.CircularGun {
+class HeroMachineGun extends MachineGun_1.CircularGun {
     createBullet() {
-        return new Bullet_ts_1.Bullet(this.game, 'bullet.blue');
+        return new Bullet_1.Bullet(this.game, 'bullet.blue');
     }
 }
 //# sourceMappingURL=Hero.js.map
@@ -921,7 +927,7 @@ class HeroMachineGun extends MachineGun_ts_1.CircularGun {
 
 ;require.register("entities/MachineGun.ts", function(exports, require, module) {
 "use strict";
-const Bullet_ts_1 = require("./Bullet.ts");
+const Bullet_1 = require("./Bullet");
 class CircularGun extends Phaser.Group {
     constructor(game, maxBullets = 64) {
         super(game);
@@ -933,7 +939,7 @@ class CircularGun extends Phaser.Group {
         }
     }
     createBullet() {
-        return new Bullet_ts_1.Bullet(this.game);
+        return new Bullet_1.Bullet(this.game);
     }
     fire(fromX, fromY, angle) {
         if (this.game.time.time >= this.nextFireTime) {
@@ -951,8 +957,8 @@ exports.CircularGun = CircularGun;
 
 ;require.register("entities/Spider.ts", function(exports, require, module) {
 "use strict";
-const b3 = require("../ia/decisions/b3.ts");
-const MachineGun_ts_1 = require("./MachineGun.ts");
+const b3 = require("../ia/decisions/b3");
+const MachineGun_1 = require("./MachineGun");
 class Spider extends Phaser.Sprite {
     constructor(game, pathfinder) {
         super(game, 0, 0, 'spider');
@@ -965,7 +971,7 @@ class Spider extends Phaser.Sprite {
         this.spiderDeath = this.game.add.sprite(this.x, this.y, 'spider');
         this.spiderDeath.anchor.setTo(0.5, 0.5);
         this.spiderDeath.exists = false;
-        this.machineGun = new MachineGun_ts_1.CircularGun(this.game, 1);
+        this.machineGun = new MachineGun_1.CircularGun(this.game, 1);
     }
     appears(fromX, fromY, target) {
         const beforeSpider = this.game.add.sprite(fromX, fromY, 'before-bird');
@@ -1259,7 +1265,7 @@ class ActionAttackEnemy extends b3.Action {
 
 ;require.register("entities/SpiderHorde.ts", function(exports, require, module) {
 "use strict";
-const Spider_ts_1 = require("./Spider.ts");
+const Spider_1 = require("./Spider");
 class SpiderHorde extends Phaser.Group {
     constructor(target, pathFinder, maxSpiders = 4) {
         super(target.game);
@@ -1283,7 +1289,7 @@ class SpiderHorde extends Phaser.Group {
         this.appears();
     }
     createSpider() {
-        const spider = new Spider_ts_1.Spider(this.game, this.pathfinder);
+        const spider = new Spider_1.Spider(this.game, this.pathfinder);
         const game = this.game;
         game.addSpriteAnimation(spider.spiderDeath, 'spider.hurt', 6);
         game.addSpriteAnimation(spider, 'spider.stand.back', 6);
@@ -1566,7 +1572,7 @@ class AbstractState extends Phaser.State {
         super();
     }
     create() {
-        this.game.input.keyboard.addKey(Phaser.Keyboard.F).onDown.add(() => this.toggleFullscreen());
+        this.game.input.keyboard.addKey(Phaser.Keyboard.F11).onDown.add(() => this.toggleFullscreen());
     }
     toggleFullscreen() {
         if (this.game.scale.isFullScreen) {
@@ -1583,20 +1589,20 @@ exports.AbstractState = AbstractState;
 
 ;require.register("states/DemoEnding.ts", function(exports, require, module) {
 "use strict";
-const AbstractState_ts_1 = require("./AbstractState.ts");
-const MenuButton_ts_1 = require("../ui/MenuButton.ts");
-class DemoEnding extends AbstractState_ts_1.AbstractState {
+const AbstractState_1 = require("./AbstractState");
+const MenuButton_1 = require("../ui/MenuButton");
+class DemoEnding extends AbstractState_1.AbstractState {
     constructor() {
         super();
     }
     preload() {
         this.game.load.image('demo_ending', 'help/demo_ending.png');
-        MenuButton_ts_1.MenuButton.preload(this.game);
+        MenuButton_1.MenuButton.preload(this.game);
     }
     create() {
         super.create();
         let logo = this.game.add.sprite(0, 0, 'demo_ending');
-        new MenuButton_ts_1.MenuButton(this.game, "Back", 500, 900, () => this.game.state.start('Title'));
+        new MenuButton_1.MenuButton(this.game, "Back", 500, 900, () => this.game.state.start('Title'));
     }
 }
 exports.DemoEnding = DemoEnding;
@@ -1605,8 +1611,9 @@ exports.DemoEnding = DemoEnding;
 
 ;require.register("states/GameOver.ts", function(exports, require, module) {
 "use strict";
-const AbstractState_ts_1 = require("./AbstractState.ts");
-class GameOver extends AbstractState_ts_1.AbstractState {
+const AbstractState_1 = require("./AbstractState");
+const MenuButton_1 = require("../ui/MenuButton");
+class GameOver extends AbstractState_1.AbstractState {
     constructor() {
         super();
     }
@@ -1616,6 +1623,7 @@ class GameOver extends AbstractState_ts_1.AbstractState {
     create() {
         super.create();
         this.game.add.image(0, 0, 'gameover');
+        new MenuButton_1.MenuButton(this.game, "Main menu", 500, 900, () => this.game.state.start('Title'));
     }
 }
 exports.GameOver = GameOver;
@@ -1624,14 +1632,14 @@ exports.GameOver = GameOver;
 
 ;require.register("states/GamepadOptions.ts", function(exports, require, module) {
 "use strict";
-const AbstractState_ts_1 = require("./AbstractState.ts");
-const MenuButton_ts_1 = require("../ui/MenuButton.ts");
-class GamepadOptions extends AbstractState_ts_1.AbstractState {
+const AbstractState_1 = require("./AbstractState");
+const MenuButton_1 = require("../ui/MenuButton");
+class GamepadOptions extends AbstractState_1.AbstractState {
     constructor() {
         super();
     }
     preload() {
-        MenuButton_ts_1.MenuButton.preload(this.game);
+        MenuButton_1.MenuButton.preload(this.game);
     }
     create() {
         super.create();
@@ -1642,26 +1650,22 @@ class GamepadOptions extends AbstractState_ts_1.AbstractState {
         let subtitle = this.game.add.text(0, 0, 'Move stick or press button to show gamepad number', { font: "60px monospace", fill: 'white' });
         subtitle.y = this.game.world.height - subtitle.height;
         new GamepadMenuButton(this.input.gamepad.pad1, 0xFF6666, "Gamepad 1", 500, 200, () => {
-            this.game.controls.usePad(this.input.gamepad.pad1);
-            this.game.state.start('Options');
+            this.game.state.start('GamepadOptionsLayout', true, false, 1);
         });
         new GamepadMenuButton(this.input.gamepad.pad2, 0x66FF66, "Gamepad 2", 500, 350, () => {
-            this.game.controls.usePad(this.input.gamepad.pad2);
-            this.game.state.start('Options');
+            this.game.state.start('GamepadOptionsLayout', true, false, 2);
         });
         new GamepadMenuButton(this.input.gamepad.pad3, 0x6666FF, "Gamepad 3", 500, 500, () => {
-            this.game.controls.usePad(this.input.gamepad.pad3);
-            this.game.state.start('Options');
+            this.game.state.start('GamepadOptionsLayout', true, false, 3);
         });
         new GamepadMenuButton(this.input.gamepad.pad4, 0xFFFF66, "Gamepad 4", 500, 650, () => {
-            this.game.controls.usePad(this.input.gamepad.pad4);
-            this.game.state.start('Options');
+            this.game.state.start('GamepadOptionsLayout', true, false, 4);
         });
-        new MenuButton_ts_1.MenuButton(this.game, "Back", 500, 800, () => this.game.state.start('Options'));
+        new MenuButton_1.MenuButton(this.game, "Back", 500, 800, () => this.game.state.start('Options'));
     }
 }
 exports.GamepadOptions = GamepadOptions;
-class GamepadMenuButton extends MenuButton_ts_1.MenuButton {
+class GamepadMenuButton extends MenuButton_1.MenuButton {
     constructor(pad, activePadTint, label, x, y, callback) {
         super(pad.game, label, x, y, callback);
         this.pad = pad;
@@ -1694,22 +1698,152 @@ class GamepadMenuButton extends MenuButton_ts_1.MenuButton {
 //# sourceMappingURL=GamepadOptions.js.map
 });
 
+;require.register("states/GamepadOptionsBindAxis.ts", function(exports, require, module) {
+"use strict";
+const AbstractState_1 = require("./AbstractState");
+const MenuButton_1 = require("../ui/MenuButton");
+class GamepadOptionsBindAxis extends AbstractState_1.AbstractState {
+    constructor() {
+        super();
+        this.bindings = [
+            { label: 'Pull move X axis', localStorageKeySuffix: 'moveXAxis' },
+            { label: 'Pull move Y axis', localStorageKeySuffix: 'moveYAxis' },
+            { label: 'Pull shoot X axis', localStorageKeySuffix: 'shootXAxis' },
+            { label: 'Pull shoot Y axis', localStorageKeySuffix: 'shootYAxis' }
+        ];
+        this.currentBinding = 0;
+        this.padIndex = 1;
+    }
+    preload() {
+        MenuButton_1.MenuButton.preload(this.game);
+    }
+    init(padIndex, binding = 0) {
+        padIndex = padIndex || 1;
+        this.padIndex = 1;
+        this.pad = this.input.gamepad['pad' + this.padIndex];
+        if (binding >= this.bindings.length) {
+            this.currentBinding = 0;
+            this.game.controls.useCustomGamepadLayout(padIndex);
+            this.game.state.start('GamepadOptions');
+        }
+        else {
+            this.currentBinding = binding;
+        }
+        this.waitForNoInput = 60;
+    }
+    create() {
+        super.create();
+        let logo = this.game.add.text(this.game.world.centerX, 0, this.bindings[this.currentBinding].label, { font: "68px monospace", fill: 'white' });
+        logo.scale.x = 2;
+        logo.scale.y = 2;
+        logo.anchor.setTo(0.5, 0);
+        new MenuButton_1.MenuButton(this.game, "Back", 500, 900, () => this.game.state.start('GamepadOptions'));
+    }
+    update() {
+        super.update();
+        let activationZone = Math.max(0.99, Math.min(0.8, 4 * this.pad.deadZone));
+        for (var k in Phaser.Gamepad) {
+            if (k.startsWith('AXIS_')) {
+                let axisCode = Phaser.Gamepad[k];
+                if (Math.abs(this.pad.axis(axisCode)) >= activationZone) {
+                    if (this.waitForNoInput > 0) {
+                        return;
+                    }
+                    else {
+                        localStorage.setItem('gamepad' + this.padIndex + '.layout.custom.' + this.bindings[this.currentBinding].localStorageKeySuffix, axisCode);
+                        this.game.state.start('GamepadOptionsBindAxis', true, false, this.padIndex, this.currentBinding + 1);
+                        return;
+                    }
+                }
+            }
+        }
+        this.waitForNoInput--;
+    }
+}
+exports.GamepadOptionsBindAxis = GamepadOptionsBindAxis;
+//# sourceMappingURL=GamepadOptionsBindAxis.js.map
+});
+
+;require.register("states/GamepadOptionsLayout.ts", function(exports, require, module) {
+"use strict";
+const AbstractState_1 = require("./AbstractState");
+const MenuButton_1 = require("../ui/MenuButton");
+class GamepadOptionsLayout extends AbstractState_1.AbstractState {
+    constructor() {
+        super();
+    }
+    preload() {
+        MenuButton_1.MenuButton.preload(this.game);
+    }
+    init(padIndex) {
+        this.padIndex = padIndex || 1;
+    }
+    create() {
+        super.create();
+        let title = this.game.add.text(this.game.world.centerX, 0, 'Choose gamepad layout', { font: "68px monospace", fill: 'white' });
+        title.scale.x = 2;
+        title.scale.y = 2;
+        title.anchor.setTo(0.5, 0);
+        new MenuButton_1.MenuButton(this.game, "Xbox", 500, 200, () => {
+            this.game.controls.useXboxLayout(this.padIndex);
+            this.game.state.start('Options');
+        });
+        new MenuButton_1.MenuButton(this.game, "Custom", 500, 350, () => {
+            this.game.state.start('GamepadOptionsBindAxis', true, false, this.padIndex);
+        });
+        new MenuButton_1.MenuButton(this.game, "Back", 500, 500, () => this.game.state.start('Options'));
+    }
+}
+exports.GamepadOptionsLayout = GamepadOptionsLayout;
+class GamepadMenuButton extends MenuButton_1.MenuButton {
+    constructor(pad, activePadTint, label, x, y, callback) {
+        super(pad.game, label, x, y, callback);
+        this.pad = pad;
+        this.activePadTint = activePadTint;
+    }
+    update() {
+        super.update();
+        if (this.isPadActive()) {
+            this.tint = this.activePadTint;
+        }
+        else {
+            this.tint = 0xFFFFFF;
+        }
+    }
+    isPadActive() {
+        for (let b = 0; b < 16; ++b) {
+            let button = this.pad.getButton(b);
+            if (button && button.isDown) {
+                return true;
+            }
+        }
+        for (let a = 0; a < 16; ++a) {
+            if (Math.abs(this.pad.axis(a)) > this.pad.deadZone) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+//# sourceMappingURL=GamepadOptionsLayout.js.map
+});
+
 ;require.register("states/Help.ts", function(exports, require, module) {
 "use strict";
-const AbstractState_ts_1 = require("./AbstractState.ts");
-const MenuButton_ts_1 = require("../ui/MenuButton.ts");
-class Help extends AbstractState_ts_1.AbstractState {
+const AbstractState_1 = require("./AbstractState");
+const MenuButton_1 = require("../ui/MenuButton");
+class Help extends AbstractState_1.AbstractState {
     constructor() {
         super();
     }
     preload() {
         this.game.load.image('help', 'help/help.png');
-        MenuButton_ts_1.MenuButton.preload(this.game);
+        MenuButton_1.MenuButton.preload(this.game);
     }
     create() {
         super.create();
         let logo = this.game.add.sprite(0, 0, 'help');
-        new MenuButton_ts_1.MenuButton(this.game, "Back", 500, 900, () => this.game.state.start('Title'));
+        new MenuButton_1.MenuButton(this.game, "Back", 500, 900, () => this.game.state.start('Title'));
     }
 }
 exports.Help = Help;
@@ -1718,8 +1852,8 @@ exports.Help = Help;
 
 ;require.register("states/Intro.ts", function(exports, require, module) {
 "use strict";
-const AbstractState_ts_1 = require("./AbstractState.ts");
-class Intro extends AbstractState_ts_1.AbstractState {
+const AbstractState_1 = require("./AbstractState");
+class Intro extends AbstractState_1.AbstractState {
     constructor() {
         super();
     }
@@ -1740,14 +1874,14 @@ exports.Intro = Intro;
 
 ;require.register("states/KeyboardOptions.ts", function(exports, require, module) {
 "use strict";
-const AbstractState_ts_1 = require("./AbstractState.ts");
-const MenuButton_ts_1 = require("../ui/MenuButton.ts");
-class KeyboardOptions extends AbstractState_ts_1.AbstractState {
+const AbstractState_1 = require("./AbstractState");
+const MenuButton_1 = require("../ui/MenuButton");
+class KeyboardOptions extends AbstractState_1.AbstractState {
     constructor() {
         super();
     }
     preload() {
-        MenuButton_ts_1.MenuButton.preload(this.game);
+        MenuButton_1.MenuButton.preload(this.game);
     }
     create() {
         super.create();
@@ -1755,47 +1889,105 @@ class KeyboardOptions extends AbstractState_ts_1.AbstractState {
         logo.scale.x = 2;
         logo.scale.y = 2;
         logo.anchor.setTo(0.5, 0);
-        new MenuButton_ts_1.MenuButton(this.game, "Azerty zsqd", 500, 300, () => {
+        new MenuButton_1.MenuButton(this.game, "Azerty zsqd ikjl", 500, 300, () => {
             this.game.controls.useAzertyLayout();
             this.game.state.start('Options');
         });
-        new MenuButton_ts_1.MenuButton(this.game, "Qwerty wsad", 500, 450, () => {
+        new MenuButton_1.MenuButton(this.game, "Qwerty wsad ikjl", 500, 450, () => {
             this.game.controls.useQwertyLayout();
             this.game.state.start('Options');
         });
-        new MenuButton_ts_1.MenuButton(this.game, "Other ⬆⬇⬅➡", 500, 600, () => {
-            this.game.controls.useOtherLayout();
+        new MenuButton_1.MenuButton(this.game, "Others ⬆⬇⬅➡ ikjl", 500, 600, () => {
+            this.game.controls.useOtherKeyboardLayout();
             this.game.state.start('Options');
         });
-        new MenuButton_ts_1.MenuButton(this.game, "Back", 500, 750, () => this.game.state.start('Options'));
+        new MenuButton_1.MenuButton(this.game, "Custom", 500, 750, () => {
+            this.game.controls.useOtherKeyboardLayout();
+            this.game.state.start('KeyboardOptionsBindKey', true, false);
+        });
+        new MenuButton_1.MenuButton(this.game, "Back", 500, 900, () => this.game.state.start('Options'));
     }
 }
 exports.KeyboardOptions = KeyboardOptions;
 //# sourceMappingURL=KeyboardOptions.js.map
 });
 
-;require.register("states/Level.ts", function(exports, require, module) {
+;require.register("states/KeyboardOptionsBindKey.ts", function(exports, require, module) {
 "use strict";
-const AbstractState_ts_1 = require("./AbstractState.ts");
-const Hero_ts_1 = require("../entities/Hero.ts");
-const BirdFlock_ts_1 = require("../entities/BirdFlock.ts");
-const GrobelinHorde_ts_1 = require("../entities/GrobelinHorde.ts");
-const SpiderHorde_ts_1 = require("../entities/SpiderHorde.ts");
-const Bunny_ts_1 = require("../entities/Bunny.ts");
-const Pathfinder_ts_1 = require("../ia/services/Pathfinder.ts");
-const DamageResolver_ts_1 = require("../utils/DamageResolver.ts");
-const Dialog_ts_1 = require("../ui/Dialog.ts");
-class Level extends AbstractState_ts_1.AbstractState {
+const AbstractState_1 = require("./AbstractState");
+const MenuButton_1 = require("../ui/MenuButton");
+class KeyboardOptionsBindKey extends AbstractState_1.AbstractState {
     constructor() {
         super();
-        this.shouldCheckBunnyLiving = false;
+        this.bindings = [
+            { label: 'Press move up key', localStorageKey: 'keyboard.layout.custom.moveUp' },
+            { label: 'Press move down key', localStorageKey: 'keyboard.layout.custom.moveDown' },
+            { label: 'Press move left key', localStorageKey: 'keyboard.layout.custom.moveLeft' },
+            { label: 'Press move right key', localStorageKey: 'keyboard.layout.custom.moveRight' },
+            { label: 'Press shoot up key', localStorageKey: 'keyboard.layout.custom.shootUp' },
+            { label: 'Press shoot down key', localStorageKey: 'keyboard.layout.custom.shootDown' },
+            { label: 'Press shoot left key', localStorageKey: 'keyboard.layout.custom.shootLeft' },
+            { label: 'Press shoot right key', localStorageKey: 'keyboard.layout.custom.shootRight' }
+        ];
+        this.currentBinding = 0;
     }
     preload() {
-        BirdFlock_ts_1.BirdFlock.preload(this.game);
-        GrobelinHorde_ts_1.GrobelinHorde.preload(this.game);
-        SpiderHorde_ts_1.SpiderHorde.preload(this.game);
-        Hero_ts_1.Hero.preload(this.game);
-        Bunny_ts_1.Bunny.preload(this.game);
+        MenuButton_1.MenuButton.preload(this.game);
+    }
+    init(binding = 0) {
+        if (binding >= this.bindings.length) {
+            this.currentBinding = 0;
+            this.game.controls.useCustomKeyboardLayout();
+            this.game.state.start('KeyboardOptions');
+        }
+        else {
+            this.currentBinding = binding;
+        }
+    }
+    create() {
+        super.create();
+        let logo = this.game.add.text(this.game.world.centerX, 0, this.bindings[this.currentBinding].label, { font: "68px monospace", fill: 'white' });
+        logo.scale.x = 2;
+        logo.scale.y = 2;
+        logo.anchor.setTo(0.5, 0);
+        new MenuButton_1.MenuButton(this.game, "Back", 500, 900, () => this.game.state.start('KeyboardOptions'));
+    }
+    update() {
+        for (var k in Phaser.KeyCode) {
+            let keycode = Phaser.KeyCode[k];
+            if (this.input.keyboard.isDown(keycode)) {
+                localStorage.setItem(this.bindings[this.currentBinding].localStorageKey, keycode);
+                this.game.state.start('KeyboardOptionsBindKey', true, false, this.currentBinding + 1);
+                break;
+            }
+        }
+    }
+}
+exports.KeyboardOptionsBindKey = KeyboardOptionsBindKey;
+//# sourceMappingURL=KeyboardOptionsBindKey.js.map
+});
+
+;require.register("states/Level.ts", function(exports, require, module) {
+"use strict";
+const AbstractState_1 = require("./AbstractState");
+const Hero_1 = require("../entities/Hero");
+const BirdFlock_1 = require("../entities/BirdFlock");
+const GrobelinHorde_1 = require("../entities/GrobelinHorde");
+const SpiderHorde_1 = require("../entities/SpiderHorde");
+const Bunny_1 = require("../entities/Bunny");
+const Pathfinder_1 = require("../ia/services/Pathfinder");
+const DamageResolver_1 = require("../utils/DamageResolver");
+const Dialog_1 = require("../ui/Dialog");
+class Level extends AbstractState_1.AbstractState {
+    constructor() {
+        super();
+    }
+    preload() {
+        BirdFlock_1.BirdFlock.preload(this.game);
+        GrobelinHorde_1.GrobelinHorde.preload(this.game);
+        SpiderHorde_1.SpiderHorde.preload(this.game);
+        Hero_1.Hero.preload(this.game);
+        Bunny_1.Bunny.preload(this.game);
         this.game.load.tilemap('map', 'levels/level1.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('terrains', 'sprites/lpc/terrains/terrains.png');
         this.game.load.image('cottage', 'sprites/lpc/thatched-roof-cottage/cottage.png');
@@ -1803,7 +1995,7 @@ class Level extends AbstractState_ts_1.AbstractState {
         this.game.load.image('doors', 'sprites/lpc/windows-doors/doors.png');
         this.game.load.image('windows', 'sprites/lpc/windows-doors/windows.png');
         this.game.load.image('obj_misk_atlas', 'sprites/lpc/tile-atlas2/obj_misk_atlas.png');
-        Dialog_ts_1.Dialog.preload(this.game);
+        Dialog_1.Dialog.preload(this.game);
     }
     create() {
         super.create();
@@ -1822,7 +2014,7 @@ class Level extends AbstractState_ts_1.AbstractState {
         map.createLayer('doors_and_windows');
         map.createLayer('roofs');
         layer.resizeWorld();
-        this.damageResolver = new DamageResolver_ts_1.DamageResolver(this.game);
+        this.damageResolver = new DamageResolver_1.DamageResolver(this.game);
         this.collisionSprites = this.game.add.physicsGroup(Phaser.Physics.ARCADE);
         ;
         for (let o of map.objects['collision']) {
@@ -1835,20 +2027,21 @@ class Level extends AbstractState_ts_1.AbstractState {
                 this.collisionSprites.add(sprite);
             }
         }
-        this.pathfinder = new Pathfinder_ts_1.Pathfinder(map);
-        this.hero = new Hero_ts_1.Hero(this.game);
+        this.pathfinder = new Pathfinder_1.Pathfinder(map);
+        this.hero = new Hero_1.Hero(this.game);
         this.game.add.existing(this.hero);
-        this.birdFlock = new BirdFlock_ts_1.BirdFlock(this.hero, 0);
+        this.birdFlock = new BirdFlock_1.BirdFlock(this.hero, 0);
         this.game.add.existing(this.birdFlock);
-        this.grobelinHorde = new GrobelinHorde_ts_1.GrobelinHorde(this.hero, this.pathfinder, 0);
+        this.grobelinHorde = new GrobelinHorde_1.GrobelinHorde(this.hero, this.pathfinder, 0);
         this.game.add.existing(this.grobelinHorde);
-        this.spiderHorde = new SpiderHorde_ts_1.SpiderHorde(this.hero, this.pathfinder, 0);
+        this.spiderHorde = new SpiderHorde_1.SpiderHorde(this.hero, this.pathfinder, 0);
         this.game.add.existing(this.spiderHorde);
         this.bunnyGroup = this.game.add.group();
+        this.shouldCheckBunnyLiving = false;
         this.startDialog();
     }
     startDialog() {
-        let dialog = new Dialog_ts_1.Dialog(this.game, "What a beautiful day! I do not regret leaving the magic university to live in this farm with my wife, Clementine.");
+        let dialog = new Dialog_1.Dialog(this.game, "What a beautiful day! I do not regret leaving the magic university to live in this farm with my wife, Clementine.");
         dialog.onFinishCallback = () => {
             dialog.text = "Speaking of her, she should be back from the forest soon. I hope she catched something good for diner.";
             dialog.onFinishCallback = () => {
@@ -1861,7 +2054,7 @@ class Level extends AbstractState_ts_1.AbstractState {
         };
     }
     endingDialog() {
-        let dialog = new Dialog_ts_1.Dialog(this.game, "What was that? It looks like somebody has invoked monsters and sent them to... me?");
+        let dialog = new Dialog_1.Dialog(this.game, "What was that? It looks like somebody has invoked monsters and sent them to... me?");
         dialog.onFinishCallback = () => {
             dialog.text = "Clementine! I must go to the forest, maybe she is in danger!";
             dialog.onFinishCallback = () => {
@@ -1881,7 +2074,7 @@ class Level extends AbstractState_ts_1.AbstractState {
         this.game.time.events.add(80 * 1000, () => {
             for (let i = 0; i < 4; ++i) {
                 let pos = this.pathfinder.randomWalkablePos();
-                let bunny = new Bunny_ts_1.Bunny(this.game, this.pathfinder);
+                let bunny = new Bunny_1.Bunny(this.game, this.pathfinder);
                 bunny.appears(pos.x, pos.y);
                 this.bunnyGroup.add(bunny);
             }
@@ -1922,14 +2115,14 @@ exports.Level = Level;
 
 ;require.register("states/Options.ts", function(exports, require, module) {
 "use strict";
-const AbstractState_ts_1 = require("./AbstractState.ts");
-const MenuButton_ts_1 = require("../ui/MenuButton.ts");
-class Options extends AbstractState_ts_1.AbstractState {
+const AbstractState_1 = require("./AbstractState");
+const MenuButton_1 = require("../ui/MenuButton");
+class Options extends AbstractState_1.AbstractState {
     constructor() {
         super();
     }
     preload() {
-        MenuButton_ts_1.MenuButton.preload(this.game);
+        MenuButton_1.MenuButton.preload(this.game);
     }
     create() {
         super.create();
@@ -1938,11 +2131,11 @@ class Options extends AbstractState_ts_1.AbstractState {
         logo.scale.y = 2;
         logo.anchor.setTo(0.5, 0);
         let y = 150;
-        new MenuButton_ts_1.MenuButton(this.game, "Keyboard", 500, y += 150, () => this.game.state.start('KeyboardOptions'));
+        new MenuButton_1.MenuButton(this.game, "Keyboard", 500, y += 150, () => this.game.state.start('KeyboardOptions'));
         if (this.input.gamepad.supported) {
-            new MenuButton_ts_1.MenuButton(this.game, "Gamepad", 500, y += 150, () => this.game.state.start('GamepadOptions'));
+            new MenuButton_1.MenuButton(this.game, "Gamepad", 500, y += 150, () => this.game.state.start('GamepadOptions'));
         }
-        new MenuButton_ts_1.MenuButton(this.game, "Back", 500, y += 150, () => this.game.state.start('Title'));
+        new MenuButton_1.MenuButton(this.game, "Back", 500, y += 150, () => this.game.state.start('Title'));
     }
 }
 exports.Options = Options;
@@ -1951,15 +2144,15 @@ exports.Options = Options;
 
 ;require.register("states/Title.ts", function(exports, require, module) {
 "use strict";
-const AbstractState_ts_1 = require("./AbstractState.ts");
-const MenuButton_ts_1 = require("../ui/MenuButton.ts");
-class Title extends AbstractState_ts_1.AbstractState {
+const AbstractState_1 = require("./AbstractState");
+const MenuButton_1 = require("../ui/MenuButton");
+class Title extends AbstractState_1.AbstractState {
     constructor() {
         super();
     }
     preload() {
         this.game.load.image('logo', 'title/logo.png');
-        MenuButton_ts_1.MenuButton.preload(this.game);
+        MenuButton_1.MenuButton.preload(this.game);
     }
     create() {
         super.create();
@@ -1967,9 +2160,9 @@ class Title extends AbstractState_ts_1.AbstractState {
         logo.scale.x = 2;
         logo.scale.y = 2;
         logo.anchor.setTo(0.5, 0);
-        new MenuButton_ts_1.MenuButton(this.game, "Start", 500, 300, () => this.game.state.start('Level'));
-        new MenuButton_ts_1.MenuButton(this.game, "Options", 500, 450, () => this.game.state.start('Options'));
-        new MenuButton_ts_1.MenuButton(this.game, "Help", 500, 600, () => this.game.state.start('Help'));
+        new MenuButton_1.MenuButton(this.game, "Start", 500, 300, () => this.game.state.start('Level'));
+        new MenuButton_1.MenuButton(this.game, "Options", 500, 450, () => this.game.state.start('Options'));
+        new MenuButton_1.MenuButton(this.game, "Help", 500, 600, () => this.game.state.start('Help'));
     }
 }
 exports.Title = Title;
@@ -2044,40 +2237,109 @@ class Controls {
         this.game = game;
         game.input.gamepad.start();
         this.kb = game.input.keyboard;
-        this.pad = game.input.gamepad.pad1;
-        if (localStorage.getItem('keyboard.layout') == 'qwerty') {
-            this.useQwertyLayout();
-        }
-        else {
+        this.setupKeyboardLayout();
+        this.setupGamepadLayout();
+    }
+    setupKeyboardLayout() {
+        let layout = localStorage.getItem('keyboard.layout');
+        if (null == layout || layout == 'azerty') {
             this.useAzertyLayout();
         }
-    }
-    usePad(pad) {
-        this.pad = pad;
+        else if (layout == 'qwerty') {
+            this.useQwertyLayout();
+        }
+        else if (layout == 'other') {
+            this.useOtherKeyboardLayout();
+        }
+        else if (layout == 'custom') {
+            this.useCustomKeyboardLayout();
+        }
     }
     useAzertyLayout() {
-        this.keyCodeUP = Phaser.KeyCode.Z;
-        this.keyCodeDOWN = Phaser.KeyCode.S;
-        this.keyCodeLEFT = Phaser.KeyCode.Q;
-        this.keyCodeRIGHT = Phaser.KeyCode.D;
+        this.keyCodeMoveUp = Phaser.KeyCode.Z;
+        this.keyCodeMoveDown = Phaser.KeyCode.S;
+        this.keyCodeMoveLeft = Phaser.KeyCode.Q;
+        this.keyCodeMoveRight = Phaser.KeyCode.D;
+        this.keyCodeShootUp = Phaser.KeyCode.I;
+        this.keyCodeShootDown = Phaser.KeyCode.K;
+        this.keyCodeShootLeft = Phaser.KeyCode.J;
+        this.keyCodeShootRight = Phaser.KeyCode.L;
         localStorage.setItem('keyboard.layout', 'azerty');
     }
     useQwertyLayout() {
-        this.keyCodeUP = Phaser.KeyCode.W;
-        this.keyCodeDOWN = Phaser.KeyCode.S;
-        this.keyCodeLEFT = Phaser.KeyCode.A;
-        this.keyCodeRIGHT = Phaser.KeyCode.D;
+        this.keyCodeMoveUp = Phaser.KeyCode.W;
+        this.keyCodeMoveDown = Phaser.KeyCode.S;
+        this.keyCodeMoveLeft = Phaser.KeyCode.A;
+        this.keyCodeMoveRight = Phaser.KeyCode.D;
+        this.keyCodeShootUp = Phaser.KeyCode.I;
+        this.keyCodeShootDown = Phaser.KeyCode.K;
+        this.keyCodeShootLeft = Phaser.KeyCode.J;
+        this.keyCodeShootRight = Phaser.KeyCode.L;
         localStorage.setItem('keyboard.layout', 'qwerty');
     }
-    useOtherLayout() {
-        this.keyCodeUP = Phaser.KeyCode.UP;
-        this.keyCodeDOWN = Phaser.KeyCode.DOWN;
-        this.keyCodeLEFT = Phaser.KeyCode.LEFT;
-        this.keyCodeRIGHT = Phaser.KeyCode.RIGHT;
+    useOtherKeyboardLayout() {
+        this.keyCodeMoveUp = Phaser.KeyCode.UP;
+        this.keyCodeMoveDown = Phaser.KeyCode.DOWN;
+        this.keyCodeMoveLeft = Phaser.KeyCode.LEFT;
+        this.keyCodeMoveRight = Phaser.KeyCode.RIGHT;
+        this.keyCodeShootUp = Phaser.KeyCode.I;
+        this.keyCodeShootDown = Phaser.KeyCode.K;
+        this.keyCodeShootLeft = Phaser.KeyCode.J;
+        this.keyCodeShootRight = Phaser.KeyCode.L;
         localStorage.setItem('keyboard.layout', 'other');
     }
+    useCustomKeyboardLayout() {
+        this.keyCodeMoveUp = this.readNumberFromLocalStorage('keyboard.layout.custom.moveUp', Phaser.KeyCode.UP);
+        this.keyCodeMoveDown = this.readNumberFromLocalStorage('keyboard.layout.custom.moveDown', Phaser.KeyCode.DOWN);
+        this.keyCodeMoveLeft = this.readNumberFromLocalStorage('keyboard.layout.custom.moveLeft', Phaser.KeyCode.LEFT);
+        this.keyCodeMoveRight = this.readNumberFromLocalStorage('keyboard.layout.custom.moveRight', Phaser.KeyCode.RIGHT);
+        this.keyCodeShootUp = this.readNumberFromLocalStorage('keyboard.layout.custom.shootUp', Phaser.KeyCode.I);
+        this.keyCodeShootDown = this.readNumberFromLocalStorage('keyboard.layout.custom.shootDown', Phaser.KeyCode.K);
+        this.keyCodeShootLeft = this.readNumberFromLocalStorage('keyboard.layout.custom.shootLeft', Phaser.KeyCode.J);
+        this.keyCodeShootRight = this.readNumberFromLocalStorage('keyboard.layout.custom.shootRight', Phaser.KeyCode.L);
+        localStorage.setItem('keyboard.layout', 'custom');
+    }
+    setupGamepadLayout() {
+        let padIndex = parseInt(localStorage.getItem('gamepad')) || 1;
+        let layout = localStorage.getItem('gamepad' + padIndex + '.layout');
+        if (null == layout || layout == 'xbox') {
+            this.useXboxLayout(padIndex);
+        }
+        else if (layout == 'custom') {
+            this.useCustomGamepadLayout(padIndex);
+        }
+    }
+    useXboxLayout(padIndex) {
+        padIndex = padIndex || 1;
+        this.pad = this.game.input.gamepad['pad' + padIndex];
+        this.moveXAxis = Phaser.Gamepad.XBOX360_STICK_LEFT_X;
+        this.moveYAxis = Phaser.Gamepad.XBOX360_STICK_LEFT_Y;
+        this.shootXAxis = Phaser.Gamepad.XBOX360_STICK_RIGHT_X;
+        this.shootYAxis = Phaser.Gamepad.XBOX360_STICK_RIGHT_Y;
+        localStorage.setItem('gamepad', padIndex.toString());
+        localStorage.setItem('gamepad' + padIndex + '.layout', 'xbox');
+    }
+    useCustomGamepadLayout(padIndex) {
+        padIndex = padIndex || 1;
+        this.pad = this.game.input.gamepad['pad' + padIndex];
+        this.moveXAxis = this.readNumberFromLocalStorage('gamepad' + padIndex + '.layout.custom.moveXAxis', Phaser.Gamepad.XBOX360_STICK_LEFT_X);
+        this.moveYAxis = this.readNumberFromLocalStorage('gamepad' + padIndex + '.layout.custom.moveYAxis', Phaser.Gamepad.XBOX360_STICK_LEFT_Y);
+        this.shootXAxis = this.readNumberFromLocalStorage('gamepad' + padIndex + '.layout.custom.shootXAxis', Phaser.Gamepad.XBOX360_STICK_RIGHT_X);
+        this.shootYAxis = this.readNumberFromLocalStorage('gamepad' + padIndex + '.layout.custom.shootYAxis', Phaser.Gamepad.XBOX360_STICK_RIGHT_Y);
+        localStorage.setItem('gamepad', padIndex.toString());
+        localStorage.setItem('gamepad' + padIndex + '.layout', 'custom');
+    }
+    readNumberFromLocalStorage(key, defaultValue) {
+        let i = parseInt(localStorage.getItem(key));
+        if (isNaN(i)) {
+            return defaultValue;
+        }
+        else {
+            return i;
+        }
+    }
     shootingAngle(shooterX, shooterY) {
-        return this.firstNonNull(this.shootingAngleFromPointer(shooterX, shooterY), this.shootingAngleFromPad());
+        return this.firstNonNull(this.shootingAngleFromPointer(shooterX, shooterY), this.shootingAngleFromPad(), this.shootingFromKeyboard());
     }
     firstNonNull(...values) {
         for (let value of values) {
@@ -2097,8 +2359,8 @@ class Controls {
         }
     }
     shootingAngleFromPad() {
-        let dx = this.pad.axis(Phaser.Gamepad.XBOX360_STICK_RIGHT_X);
-        let dy = this.pad.axis(Phaser.Gamepad.XBOX360_STICK_RIGHT_Y);
+        let dx = this.pad.axis(this.shootXAxis);
+        let dy = this.pad.axis(this.shootYAxis);
         dx = Math.abs(dx) <= this.pad.deadZone ? 0 : dx;
         dy = Math.abs(dy) <= this.pad.deadZone ? 0 : dy;
         if (dx != 0 || dy != 0) {
@@ -2108,29 +2370,43 @@ class Controls {
             return null;
         }
     }
+    shootingFromKeyboard() {
+        let dx = 0;
+        if (this.kb.isDown(this.keyCodeShootLeft)) {
+            dx = -1;
+        }
+        else if (this.kb.isDown(this.keyCodeShootRight)) {
+            dx = 1;
+        }
+        let dy = 0;
+        if (this.kb.isDown(this.keyCodeShootUp)) {
+            dy = -1;
+        }
+        else if (this.kb.isDown(this.keyCodeShootDown)) {
+            dy = 1;
+        }
+        if (dx != 0 || dy != 0) {
+            return Phaser.Math.angleBetween(0, 0, dx, dy);
+        }
+        else {
+            return null;
+        }
+    }
     isGoingUp() {
-        return this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_UP)
-            || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) < -this.pad.deadZone
-            || this.kb.isDown(Phaser.KeyCode.UP)
-            || this.kb.isDown(this.keyCodeUP);
+        return this.pad.axis(this.moveYAxis) < -this.pad.deadZone
+            || this.kb.isDown(this.keyCodeMoveUp);
     }
     isGoingDown() {
-        return this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_DOWN)
-            || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) > this.pad.deadZone
-            || this.kb.isDown(Phaser.KeyCode.DOWN)
-            || this.kb.isDown(this.keyCodeDOWN);
+        return this.pad.axis(this.moveYAxis) > this.pad.deadZone
+            || this.kb.isDown(this.keyCodeMoveDown);
     }
     isGoingLeft() {
-        return this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_LEFT)
-            || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) < -this.pad.deadZone
-            || this.kb.isDown(Phaser.KeyCode.LEFT)
-            || this.kb.isDown(this.keyCodeLEFT);
+        return this.pad.axis(this.moveXAxis) < -this.pad.deadZone
+            || this.kb.isDown(this.keyCodeMoveLeft);
     }
     isGoingRight() {
-        return this.pad.isDown(Phaser.Gamepad.XBOX360_DPAD_RIGHT)
-            || this.pad.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_X) > this.pad.deadZone
-            || this.kb.isDown(Phaser.KeyCode.RIGHT)
-            || this.kb.isDown(this.keyCodeRIGHT);
+        return this.pad.axis(this.moveXAxis) > this.pad.deadZone
+            || this.kb.isDown(this.keyCodeMoveRight);
     }
     isPassDialogButtonDown() {
         return this.game.input.activePointer.isDown
