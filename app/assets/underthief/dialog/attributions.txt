@@ -1,9 +1,0 @@
-dialog_bg.png
-Author: devnewton@bci.im
-License: CC-BY-SA
-
-# Art used
-
-http://opengameart.org/content/free-keyboard-and-controllers-prompts-pack
-Author: xelu
-License: CC0

@@ -8,12 +8,12 @@
     "url": ""
   },
   "scripts": {
-    "start": "brunch watch --server",
-    "build": "brunch build --production"
+    "start": "npx brunch watch --server",
+    "build": "npx brunch build --production"
   },
   "dependencies": {
     "blaze": "3.0.0"
-    },
+  },
   "devDependencies": {
     "brunch": "^2.0.0",
     "javascript-brunch": "^2.0.0",
