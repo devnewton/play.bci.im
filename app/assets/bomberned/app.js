@@ -435,7 +435,7 @@ class Player extends Phaser.Sprite {
         this.cpuData = {};
         this.oldPos = new Phaser.Point(0, 0);
         this.invincible = false;
-        this.health = 3;
+        this.health = 1;
         game.addSpriteAnimation(this, 'player.walk.back', 4);
         game.addSpriteAnimation(this, 'player.walk.front', 4);
         game.addSpriteAnimation(this, 'player.walk.left', 4);
@@ -472,14 +472,35 @@ class Player extends Phaser.Sprite {
         }
         return this;
     }
+    kill() {
+        let ghost = new Ghost(this.game, this.key);
+        ghost.x = this.x;
+        ghost.y = this.y;
+        let goToHeavenTween = this.game.add.tween(ghost);
+        goToHeavenTween.to({ y: -100 }, 5000, "Linear", true);
+        let swirlTween = this.game.add.tween(ghost);
+        swirlTween.to({ x: "-50" }, 1000, "Linear", true, 0, -1, true);
+        this.game.state.getCurrentState().add.existing(ghost);
+        this.destroy();
+        return this;
+    }
 }
 Player.RUNNING_STATE = new PlayerRunningState();
 exports.Player = Player;
+class Ghost extends Phaser.Sprite {
+    constructor(game, key) {
+        super(game, game.world.centerX, game.world.centerY, key);
+        this.outOfBoundsKill = true;
+        game.addSpriteAnimation(this, 'player.ghost', 1);
+        this.play("player.ghost", 1, false);
+        this.anchor.setTo(0.5, 0.5);
+    }
+}
 
 
 });
 
-require.register("entities/Team.ts", function(exports, require, module) {
+;require.register("entities/Team.ts", function(exports, require, module) {
 "use strict";
 class Team extends Phaser.Group {
     constructor(game) {
@@ -974,8 +995,8 @@ class Level extends AbstractState_1.AbstractState {
         Arrow_1.Arrow.preload(this.game);
         Bomb_1.Bomb.preload(this.game);
         Menu_1.Menu.preload(this.game);
-        this.game.load.image('girls-win', 'victory/girls-win.png');
-        this.game.load.image('boys-win', 'victory/boys-win.png');
+        this.game.load.image('neds-win', 'victory/neds-win.png');
+        this.game.load.image('moustakis-win', 'victory/moustakis-win.png');
         this.game.load.tilemap('map', 'levels/level1.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('dojo', 'levels/dojo.png');
         this.game.load.image('arabic1', 'sprites/opengameart/arabic_set/arabic1.png');
@@ -1123,17 +1144,13 @@ class Level extends AbstractState_1.AbstractState {
     }
     checkVictory() {
         if (!this.victory) {
-            const girlsWin = false;
-            const boysWin = false;
-            this.victory = boysWin || girlsWin;
+            const nedsTeamWin = this.moustakisTeam.countLiving() === 0;
+            const moustakisTeamWin = this.nedsTeam.countLiving() === 0;
+            this.victory = nedsTeamWin || moustakisTeamWin;
             if (this.victory) {
                 this.game.sound.stopAll();
                 this.game.sound.play('victory-music', 1, false);
-                this.nedsTeam.forEachAlive((player) => {
-                }, null);
-                this.moustakisTeam.forEachAlive((player) => {
-                }, null);
-                let victoryText = this.game.add.sprite(this.game.world.centerX, 100, boysWin && girlsWin && 'draw' || boysWin && 'boys-win' || 'girls-win');
+                let victoryText = this.game.add.sprite(this.game.world.centerX, 100, nedsTeamWin && moustakisTeamWin && 'draw' || nedsTeamWin && 'neds-win' || 'moustakis-win');
                 var tween = this.game.add.tween(victoryText.scale).to({ x: 1.4, y: 1.4 }, 1000, "Linear", true, 0, -1);
                 tween.yoyo(true);
                 victoryText.anchor.setTo(0.5, 0);
