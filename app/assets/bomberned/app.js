@@ -435,7 +435,7 @@ class Player extends Phaser.Sprite {
         this.cpuData = {};
         this.oldPos = new Phaser.Point(0, 0);
         this.invincible = false;
-        this.health = 1;
+        this.health = 3;
         game.addSpriteAnimation(this, 'player.walk.back', 4);
         game.addSpriteAnimation(this, 'player.walk.front', 4);
         game.addSpriteAnimation(this, 'player.walk.left', 4);
@@ -515,11 +515,39 @@ exports.Team = Team;
 require.register("ia/CPU.ts", function(exports, require, module) {
 "use strict";
 class CPU {
-    constructor() {
-        this.lastCapturedCount = 0;
-    }
     think() {
         this.controls.reset();
+        if (this.me.alive) {
+            if (!this.destination) {
+                this.destination = this.findSafePos();
+            }
+            else if (Phaser.Point.distance(this.me.position, this.destination) < 32) {
+                this.destination = null;
+            }
+            else {
+                this.moveToXY(this.destination.x, this.destination.y);
+            }
+            this.tryToShootArrow();
+            this.tryToDropBomb();
+        }
+    }
+    tryToShootArrow() {
+        let opponent = this.opponents.getFirstAlive();
+        if (opponent) {
+            this.controls.aimAngle = Phaser.Math.angleBetweenPoints(this.me.position, opponent.position);
+            this.controls.shooting = !this.me.arrow.alive;
+        }
+    }
+    tryToDropBomb() {
+        if (!this.controls.shooting) {
+            this.controls.droppingBomb = this.me.game.rnd.integerInRange(0, 100) < 20;
+        }
+    }
+    findSafePos() {
+        let worldBounds = this.me.game.physics.arcade.bounds;
+        let x = this.me.game.rnd.between(worldBounds.left, worldBounds.right);
+        let y = this.me.game.rnd.between(worldBounds.top, worldBounds.bottom);
+        return new Phaser.Point(x, y);
     }
     moveToXY(x, y) {
         if (this.me.body.x < x) {
