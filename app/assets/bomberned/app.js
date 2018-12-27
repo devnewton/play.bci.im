@@ -151,8 +151,7 @@ require.register("BombernedApp.ts", function(exports, require, module) {
 "use strict";
 const BombernedGame_1 = require("./BombernedGame");
 new BombernedGame_1.BombernedGame();
-
-
+//# sourceMappingURL=BombernedApp.js.map
 });
 
 require.register("BombernedGame.ts", function(exports, require, module) {
@@ -209,11 +208,10 @@ class BombernedGame extends Phaser.Game {
     }
 }
 exports.BombernedGame = BombernedGame;
-
-
+//# sourceMappingURL=BombernedGame.js.map
 });
 
-require.register("entities/Arrow.ts", function(exports, require, module) {
+;require.register("entities/Arrow.ts", function(exports, require, module) {
 "use strict";
 const Explosion_1 = require("./Explosion");
 class Arrow extends Phaser.Sprite {
@@ -279,14 +277,13 @@ class ArrowCharge extends Phaser.Sprite {
     }
 }
 exports.ArrowCharge = ArrowCharge;
-
-
+//# sourceMappingURL=Arrow.js.map
 });
 
-require.register("entities/Bomb.ts", function(exports, require, module) {
+;require.register("entities/Bomb.ts", function(exports, require, module) {
 "use strict";
 const Explosion_1 = require("./Explosion");
-const TIME_BEFORE_EXPLOSION = 50000;
+const TIME_BEFORE_EXPLOSION = 5000;
 const ABOUT_TO_EXPLODE_ANIM_DURATION = 3000;
 class Bomb extends Phaser.Sprite {
     constructor(game) {
@@ -351,11 +348,10 @@ class BombExplosion extends Explosion_1.Explosion {
     }
 }
 exports.BombExplosion = BombExplosion;
-
-
+//# sourceMappingURL=Bomb.js.map
 });
 
-require.register("entities/Explosion.ts", function(exports, require, module) {
+;require.register("entities/Explosion.ts", function(exports, require, module) {
 "use strict";
 class Explosion extends Phaser.Sprite {
     kill() {
@@ -367,18 +363,14 @@ class Explosion extends Phaser.Sprite {
     }
 }
 exports.Explosion = Explosion;
-
-
+//# sourceMappingURL=Explosion.js.map
 });
 
-require.register("entities/Player.ts", function(exports, require, module) {
+;require.register("entities/Player.ts", function(exports, require, module) {
 "use strict";
 const Bomb_1 = require("./Bomb");
 const Arrow_1 = require("./Arrow");
 class PlayerRunningState {
-    constructor() {
-        this.nextBombTime = -1;
-    }
     update(player) {
         if (!player.oldPos.equals(player.position)) {
             player.oldPos = player.position.clone();
@@ -388,15 +380,16 @@ class PlayerRunningState {
             player.body.velocity.y = 0;
             let aimingAngle = player.controls.aimingAngle(player.position);
             if (aimingAngle != null) {
-                if (player.controls.isShooting() && !player.arrow.alive) {
+                if (player.controls.isShooting() && !player.arrow.alive && player.game.time.time > player.nextArrowTime) {
                     player.arrow.fire(player.x, player.y, aimingAngle, 500);
+                    player.nextArrowTime = player.game.time.time + 1000;
                 }
             }
-            if (player.controls.isDroppingBomb() && player.game.time.time > this.nextBombTime) {
+            if (player.controls.isDroppingBomb() && player.game.time.time > player.nextBombTime) {
                 let bomb = new Bomb_1.Bomb(player.game);
                 bomb.x = player.x;
                 bomb.y = player.y;
-                this.nextBombTime = player.game.time.time + 1000;
+                player.nextBombTime = player.game.time.time + 1000;
             }
             if (player.controls.isGoingLeft()) {
                 player.body.velocity.x = -1;
@@ -433,6 +426,8 @@ class Player extends Phaser.Sprite {
     constructor(game, key) {
         super(game, game.world.centerX, game.world.centerY, key);
         this.cpuData = {};
+        this.nextBombTime = -1;
+        this.nextArrowTime = -1;
         this.oldPos = new Phaser.Point(0, 0);
         this.invincible = false;
         this.health = 3;
@@ -496,8 +491,7 @@ class Ghost extends Phaser.Sprite {
         this.anchor.setTo(0.5, 0.5);
     }
 }
-
-
+//# sourceMappingURL=Player.js.map
 });
 
 ;require.register("entities/Team.ts", function(exports, require, module) {
@@ -508,11 +502,10 @@ class Team extends Phaser.Group {
     }
 }
 exports.Team = Team;
-
-
+//# sourceMappingURL=Team.js.map
 });
 
-require.register("ia/CPU.ts", function(exports, require, module) {
+;require.register("ia/CPU.ts", function(exports, require, module) {
 "use strict";
 class CPU {
     think() {
@@ -565,11 +558,10 @@ class CPU {
     }
 }
 exports.CPU = CPU;
-
-
+//# sourceMappingURL=CPU.js.map
 });
 
-require.register("states/AbstractState.ts", function(exports, require, module) {
+;require.register("states/AbstractState.ts", function(exports, require, module) {
 "use strict";
 class AbstractState extends Phaser.State {
     constructor() {
@@ -588,11 +580,10 @@ class AbstractState extends Phaser.State {
     }
 }
 exports.AbstractState = AbstractState;
-
-
+//# sourceMappingURL=AbstractState.js.map
 });
 
-require.register("states/GamepadOptions.ts", function(exports, require, module) {
+;require.register("states/GamepadOptions.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_1 = require("./AbstractState");
 const Menu_1 = require("../ui/Menu");
@@ -659,8 +650,7 @@ class GamepadMenuButton extends MenuButton_1.MenuButton {
         return false;
     }
 }
-
-
+//# sourceMappingURL=GamepadOptions.js.map
 });
 
 ;require.register("states/GamepadOptionsBindAxisOrButton.ts", function(exports, require, module) {
@@ -790,8 +780,7 @@ class ButtonButton extends MenuMiniButton_1.MenuMiniButton {
         }
     }
 }
-
-
+//# sourceMappingURL=GamepadOptionsBindAxisOrButton.js.map
 });
 
 ;require.register("states/GamepadOptionsLayout.ts", function(exports, require, module) {
@@ -827,11 +816,10 @@ class GamepadOptionsLayout extends AbstractState_1.AbstractState {
     }
 }
 exports.GamepadOptionsLayout = GamepadOptionsLayout;
-
-
+//# sourceMappingURL=GamepadOptionsLayout.js.map
 });
 
-require.register("states/Help1.ts", function(exports, require, module) {
+;require.register("states/Help1.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_1 = require("./AbstractState");
 const Menu_1 = require("../ui/Menu");
@@ -851,11 +839,10 @@ class Help1 extends AbstractState_1.AbstractState {
     }
 }
 exports.Help1 = Help1;
-
-
+//# sourceMappingURL=Help1.js.map
 });
 
-require.register("states/Intro.ts", function(exports, require, module) {
+;require.register("states/Intro.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_1 = require("./AbstractState");
 class Intro extends AbstractState_1.AbstractState {
@@ -894,11 +881,10 @@ class Intro extends AbstractState_1.AbstractState {
     }
 }
 exports.Intro = Intro;
-
-
+//# sourceMappingURL=Intro.js.map
 });
 
-require.register("states/KeyboardOptions.ts", function(exports, require, module) {
+;require.register("states/KeyboardOptions.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_1 = require("./AbstractState");
 const Menu_1 = require("../ui/Menu");
@@ -938,11 +924,10 @@ class KeyboardOptions extends AbstractState_1.AbstractState {
     }
 }
 exports.KeyboardOptions = KeyboardOptions;
-
-
+//# sourceMappingURL=KeyboardOptions.js.map
 });
 
-require.register("states/KeyboardOptionsBindKey.ts", function(exports, require, module) {
+;require.register("states/KeyboardOptionsBindKey.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_1 = require("./AbstractState");
 const Menu_1 = require("../ui/Menu");
@@ -996,11 +981,10 @@ class KeyboardOptionsBindKey extends AbstractState_1.AbstractState {
     }
 }
 exports.KeyboardOptionsBindKey = KeyboardOptionsBindKey;
-
-
+//# sourceMappingURL=KeyboardOptionsBindKey.js.map
 });
 
-require.register("states/Level.ts", function(exports, require, module) {
+;require.register("states/Level.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_1 = require("./AbstractState");
 const Player_1 = require("../entities/Player");
@@ -1027,7 +1011,6 @@ class Level extends AbstractState_1.AbstractState {
         this.game.load.image('moustakis-win', 'victory/moustakis-win.png');
         this.game.load.tilemap('map', 'levels/level1.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('dojo', 'levels/dojo.png');
-        this.game.load.image('arabic1', 'sprites/opengameart/arabic_set/arabic1.png');
         this.game.load.audio('level-music', 'musics/opengameart/8-bit-music-pack-loopable/bgm_action_4.mp3');
         this.game.load.audio('victory-music', 'musics/opengameart/hungry-dino-9-chiptune-tracks-10-sfx/victory.mp3');
     }
@@ -1195,11 +1178,10 @@ class Level extends AbstractState_1.AbstractState {
     }
 }
 exports.Level = Level;
-
-
+//# sourceMappingURL=Level.js.map
 });
 
-require.register("states/Options.ts", function(exports, require, module) {
+;require.register("states/Options.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_1 = require("./AbstractState");
 const Menu_1 = require("../ui/Menu");
@@ -1226,11 +1208,10 @@ class Options extends AbstractState_1.AbstractState {
     }
 }
 exports.Options = Options;
-
-
+//# sourceMappingURL=Options.js.map
 });
 
-require.register("states/TeamSelectScreen.ts", function(exports, require, module) {
+;require.register("states/TeamSelectScreen.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_1 = require("./AbstractState");
 const Level_1 = require("./Level");
@@ -1330,11 +1311,10 @@ class TeamSelectScreen extends AbstractState_1.AbstractState {
     }
 }
 exports.TeamSelectScreen = TeamSelectScreen;
-
-
+//# sourceMappingURL=TeamSelectScreen.js.map
 });
 
-require.register("states/Title.ts", function(exports, require, module) {
+;require.register("states/Title.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_1 = require("./AbstractState");
 const Menu_1 = require("../ui/Menu");
@@ -1359,11 +1339,10 @@ class Title extends AbstractState_1.AbstractState {
     }
 }
 exports.Title = Title;
-
-
+//# sourceMappingURL=Title.js.map
 });
 
-require.register("ui/Menu.ts", function(exports, require, module) {
+;require.register("ui/Menu.ts", function(exports, require, module) {
 "use strict";
 const MenuCursor_1 = require("./MenuCursor");
 const MenuButton_1 = require("./MenuButton");
@@ -1401,11 +1380,10 @@ class Menu extends Phaser.Group {
     }
 }
 exports.Menu = Menu;
-
-
+//# sourceMappingURL=Menu.js.map
 });
 
-require.register("ui/MenuButton.ts", function(exports, require, module) {
+;require.register("ui/MenuButton.ts", function(exports, require, module) {
 "use strict";
 class MenuButton extends Phaser.Button {
     constructor(game, label, x, y, callback) {
@@ -1422,11 +1400,10 @@ class MenuButton extends Phaser.Button {
     }
 }
 exports.MenuButton = MenuButton;
-
-
+//# sourceMappingURL=MenuButton.js.map
 });
 
-require.register("ui/MenuCursor.ts", function(exports, require, module) {
+;require.register("ui/MenuCursor.ts", function(exports, require, module) {
 "use strict";
 class MenuCursor extends Phaser.Text {
     constructor(game, buttons) {
@@ -1539,11 +1516,10 @@ class MenuCursor extends Phaser.Text {
     }
 }
 exports.MenuCursor = MenuCursor;
-
-
+//# sourceMappingURL=MenuCursor.js.map
 });
 
-require.register("ui/MenuMiniButton.ts", function(exports, require, module) {
+;require.register("ui/MenuMiniButton.ts", function(exports, require, module) {
 "use strict";
 class MenuMiniButton extends Phaser.Button {
     constructor(game, label, x, y, callback) {
@@ -1563,11 +1539,10 @@ class MenuMiniButton extends Phaser.Button {
     }
 }
 exports.MenuMiniButton = MenuMiniButton;
-
-
+//# sourceMappingURL=MenuMiniButton.js.map
 });
 
-require.register("ui/MenuSelect.ts", function(exports, require, module) {
+;require.register("ui/MenuSelect.ts", function(exports, require, module) {
 "use strict";
 class MenuSelectOption {
     constructor(value, label, callback) {
@@ -1600,11 +1575,10 @@ class MenuSelect extends Phaser.Button {
     }
 }
 exports.MenuSelect = MenuSelect;
-
-
+//# sourceMappingURL=MenuSelect.js.map
 });
 
-require.register("utils/Controls.ts", function(exports, require, module) {
+;require.register("utils/Controls.ts", function(exports, require, module) {
 "use strict";
 const GamepadUtils_1 = require("./GamepadUtils");
 var ControllerType;
@@ -1860,11 +1834,10 @@ class PadControls extends AbstractControls {
     }
 }
 exports.PadControls = PadControls;
-
-
+//# sourceMappingURL=Controls.js.map
 });
 
-require.register("utils/DamageResolver.ts", function(exports, require, module) {
+;require.register("utils/DamageResolver.ts", function(exports, require, module) {
 "use strict";
 const Arrow_1 = require("../entities/Arrow");
 class DamageResolver {
@@ -1932,11 +1905,10 @@ class DamageResolver {
     }
 }
 exports.DamageResolver = DamageResolver;
-
-
+//# sourceMappingURL=DamageResolver.js.map
 });
 
-require.register("utils/GamepadUtils.ts", function(exports, require, module) {
+;require.register("utils/GamepadUtils.ts", function(exports, require, module) {
 "use strict";
 class GamepadUtils {
     static gamepadColor(pad) {
@@ -1970,12 +1942,12 @@ class GamepadUtils {
 GamepadUtils.NB_BUTTONS = 16;
 GamepadUtils.NB_AXIS = 10;
 exports.GamepadUtils = GamepadUtils;
-
-
+//# sourceMappingURL=GamepadUtils.js.map
 });
 
-require.register("___globals___", function(exports, require, module) {
+;require.register("___globals___", function(exports, require, module) {
   
 });})();require('___globals___');
 
 require('BombernedApp');
+//# sourceMappingURL=app.js.map
