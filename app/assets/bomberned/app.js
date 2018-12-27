@@ -1027,7 +1027,6 @@ class Level extends AbstractState_1.AbstractState {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         const map = this.game.add.tilemap('map');
         map.addTilesetImage('dojo');
-        map.addTilesetImage('arabic1');
         const layer = map.createLayer('ground');
         map.createLayer('wall');
         layer.resizeWorld();
