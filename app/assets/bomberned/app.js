@@ -161,6 +161,7 @@ const Help1_1 = require("./states/Help1");
 const Title_1 = require("./states/Title");
 const Options_1 = require("./states/Options");
 const KeyboardOptions_1 = require("./states/KeyboardOptions");
+const MouseOptions_1 = require("./states/MouseOptions");
 const KeyboardOptionsBindKey_1 = require("./states/KeyboardOptionsBindKey");
 const GamepadOptions_1 = require("./states/GamepadOptions");
 const GamepadOptionsLayout_1 = require("./states/GamepadOptionsLayout");
@@ -182,6 +183,7 @@ class BombernedGame extends Phaser.Game {
         this.state.add('GamepadOptionsBindAxisOrButton', GamepadOptionsBindAxisOrButton_1.GamepadOptionsBindAxisOrButton);
         this.state.add('KeyboardOptions', KeyboardOptions_1.KeyboardOptions);
         this.state.add('KeyboardOptionsBindKey', KeyboardOptionsBindKey_1.KeyboardOptionsBindKey);
+        this.state.add('MouseOptions', MouseOptions_1.MouseOptions);
         this.state.add('GamepadOptions', GamepadOptions_1.GamepadOptions);
         this.state.add('TeamSelectScreen', TeamSelectScreen_1.TeamSelectScreen);
         this.state.add('Level', Level_1.Level);
@@ -684,7 +686,7 @@ class GamepadOptionsBindAxisOrButton extends AbstractState_1.AbstractState {
         this.pad = GamepadUtils_1.GamepadUtils.gamepadByIndex(this.game, padIndex);
         if (binding >= this.bindingsDescription.length) {
             this.currentBinding = 0;
-            localStorage.setItem('gamepad.' + GamepadUtils_1.GamepadUtils.gamepadId(this.pad) + '.layout', JSON.stringify(this.bindings));
+            localStorage.setItem('bomberned.gamepad.' + GamepadUtils_1.GamepadUtils.gamepadId(this.pad) + '.layout', JSON.stringify(this.bindings));
             this.game.controllers.updatePadLayout();
             this.game.state.start('GamepadOptions');
         }
@@ -806,7 +808,7 @@ class GamepadOptionsLayout extends AbstractState_1.AbstractState {
         title.anchor.setTo(0.5, 0);
         const menu = new Menu_1.Menu(this.game).disableGamepadCursor();
         menu.button("Xbox", 200, 200, () => {
-            localStorage.setItem('gamepad.' + GamepadUtils_1.GamepadUtils.gamepadId(GamepadUtils_1.GamepadUtils.gamepadByIndex(this.game, this.padIndex)) + '.layout', 'xbox');
+            localStorage.setItem('bomberned.gamepad.' + GamepadUtils_1.GamepadUtils.gamepadId(GamepadUtils_1.GamepadUtils.gamepadByIndex(this.game, this.padIndex)) + '.layout', 'xbox');
             this.game.state.start('Options');
         });
         menu.button("Custom", 200, 300, () => {
@@ -903,19 +905,19 @@ class KeyboardOptions extends AbstractState_1.AbstractState {
         logo.anchor.setTo(0.5, 0);
         const menu = new Menu_1.Menu(this.game).disableKeyboardCursor();
         menu.button("Azerty zsqd", 200, 100, () => {
-            localStorage.setItem('keyboard.layout', 'azerty');
-            this.game.controllers.getKeyboard().setupKeyboardLayout();
-            this.game.state.start('Options');
+            localStorage.setItem('bomberned.keyboard.layout', 'azerty');
+            this.game.controllers.getKeyboardAndMouse().setupKeyboardLayout();
+            this.game.state.start('MouseOptions');
         });
         menu.button("Qwerty wsad", 200, 200, () => {
-            localStorage.setItem('keyboard.layout', 'qwerty');
-            this.game.controllers.getKeyboard().setupKeyboardLayout();
-            this.game.state.start('Options');
+            localStorage.setItem('bomberned.keyboard.layout', 'qwerty');
+            this.game.controllers.getKeyboardAndMouse().setupKeyboardLayout();
+            this.game.state.start('MouseOptions');
         });
         menu.button("⬆⬇⬅➡", 200, 300, () => {
-            localStorage.setItem('keyboard.layout', 'other');
-            this.game.controllers.getKeyboard().setupKeyboardLayout();
-            this.game.state.start('Options');
+            localStorage.setItem('bomberned.keyboard.layout', 'other');
+            this.game.controllers.getKeyboardAndMouse().setupKeyboardLayout();
+            this.game.state.start('MouseOptions');
         });
         menu.button("Custom", 200, 400, () => {
             this.game.state.start('KeyboardOptionsBindKey', true, false);
@@ -939,7 +941,6 @@ class KeyboardOptionsBindKey extends AbstractState_1.AbstractState {
             { label: 'Press move down key', localStorageKey: 'moveDown' },
             { label: 'Press move left key', localStorageKey: 'moveLeft' },
             { label: 'Press move right key', localStorageKey: 'moveRight' },
-            { label: 'Press shoot key', localStorageKey: 'shoot' },
             { label: 'Press menu key', localStorageKey: 'menu' }
         ];
         this.currentBinding = 0;
@@ -952,9 +953,9 @@ class KeyboardOptionsBindKey extends AbstractState_1.AbstractState {
         this.bindings = bindings || {};
         if (binding >= this.bindingsDescription.length) {
             this.currentBinding = 0;
-            localStorage.setItem('keyboard.layout', JSON.stringify(this.bindings));
-            this.game.controllers.getKeyboard().setupKeyboardLayout();
-            this.game.state.start('KeyboardOptions');
+            localStorage.setItem('bomberned.keyboard.layout', JSON.stringify(this.bindings));
+            this.game.controllers.getKeyboardAndMouse().setupKeyboardLayout();
+            this.game.state.start('MouseOptions');
         }
         else {
             this.currentBinding = binding;
@@ -1141,7 +1142,7 @@ class Level extends AbstractState_1.AbstractState {
             return true;
         }
         const controllers = this.game.controllers;
-        let isMenuAsked = controllers.getKeyboard().isMenuAsked();
+        let isMenuAsked = controllers.getKeyboardAndMouse().isMenuAsked();
         this.nedsTeam.forEachAlive((player) => {
             isMenuAsked = isMenuAsked || player.controls.isMenuAsked();
         }, null);
@@ -1180,6 +1181,43 @@ exports.Level = Level;
 //# sourceMappingURL=Level.js.map
 });
 
+;require.register("states/MouseOptions.ts", function(exports, require, module) {
+"use strict";
+const AbstractState_1 = require("./AbstractState");
+const Menu_1 = require("../ui/Menu");
+class MouseOptions extends AbstractState_1.AbstractState {
+    constructor() {
+        super();
+    }
+    preload() {
+        Menu_1.Menu.preload(this.game);
+    }
+    create() {
+        super.create();
+        let logo = this.game.add.text(this.game.world.centerX, 0, 'Choose mouse layout', { font: "42px monospace", fill: 'white' });
+        logo.scale.x = 2;
+        logo.scale.y = 2;
+        logo.anchor.setTo(0.5, 0);
+        const menu = new Menu_1.Menu(this.game).disableKeyboardCursor();
+        menu.button("Bomb LB, shoot RB", 200, 100, () => {
+            localStorage.setItem('bomberned.mouse.bomb', 'LB');
+            localStorage.setItem('bomberned.mouse.shoot', 'RB');
+            this.game.controllers.getKeyboardAndMouse().setupMouseLayout();
+            this.game.state.start('Options');
+        });
+        menu.button("Bomb RB, shoot LB", 200, 200, () => {
+            localStorage.setItem('bomberned.mouse.bomb', 'RB');
+            localStorage.setItem('bomberned.mouse.shoot', 'LB');
+            this.game.controllers.getKeyboardAndMouse().setupMouseLayout();
+            this.game.state.start('Options');
+        });
+        menu.button("Back", 200, 600, () => this.game.state.start('Options'));
+    }
+}
+exports.MouseOptions = MouseOptions;
+//# sourceMappingURL=MouseOptions.js.map
+});
+
 ;require.register("states/Options.ts", function(exports, require, module) {
 "use strict";
 const AbstractState_1 = require("./AbstractState");
@@ -1199,7 +1237,7 @@ class Options extends AbstractState_1.AbstractState {
         logo.anchor.setTo(0.5, 0);
         let y = 100;
         const menu = new Menu_1.Menu(this.game);
-        menu.button("Keyboard", 200, y += 150, () => this.game.state.start('KeyboardOptions'));
+        menu.button("Keyboard & mouse", 200, y += 150, () => this.game.state.start('KeyboardOptions'));
         if (this.input.gamepad.supported) {
             menu.button("Gamepad", 200, y += 150, () => this.game.state.start('GamepadOptions'));
         }
@@ -1611,7 +1649,7 @@ class Controllers {
                 return this.controllers[type];
         }
     }
-    getKeyboard() {
+    getKeyboardAndMouse() {
         return this.controllers[0];
     }
     getPad(padIndex) {
@@ -1625,15 +1663,6 @@ class Controllers {
 }
 exports.Controllers = Controllers;
 class AbstractControls {
-    readNumberFromLocalStorage(key, defaultValue) {
-        let i = parseInt(localStorage.getItem(key));
-        if (isNaN(i)) {
-            return defaultValue;
-        }
-        else {
-            return i;
-        }
-    }
 }
 exports.AbstractControls = AbstractControls;
 class CPUControls extends AbstractControls {
@@ -1687,9 +1716,14 @@ class KeyboardAndMouseControls extends AbstractControls {
         super();
         this.game = game;
         this.setupKeyboardLayout();
+        this.setupMouseLayout();
+    }
+    setupMouseLayout() {
+        this.bombMouseButton = localStorage.getItem('bomberned.mouse.bomb') || 'LB';
+        this.shootMouseButton = localStorage.getItem('bomberned.mouse.shoot') || 'RB';
     }
     setupKeyboardLayout() {
-        const layout = localStorage.getItem('keyboard.layout');
+        const layout = localStorage.getItem('bomberned.keyboard.layout');
         this.kb = this.game.input.keyboard;
         try {
             let mapping = JSON.parse(layout) || {};
@@ -1734,7 +1768,7 @@ class KeyboardAndMouseControls extends AbstractControls {
         this.keyCodeMenu = Phaser.KeyCode.ESC;
     }
     isShooting() {
-        return this.game.input.activePointer.rightButton.isDown;
+        return this.isMouseButtonDown(this.shootMouseButton);
     }
     aimingAngle(playerPos) {
         const pointer = this.game.input.activePointer;
@@ -1753,10 +1787,20 @@ class KeyboardAndMouseControls extends AbstractControls {
         return this.kb && this.kb.isDown(this.keyCodeMoveRight);
     }
     isDroppingBomb() {
-        return this.kb && this.game.input.activePointer.leftButton.isDown;
+        return this.isMouseButtonDown(this.bombMouseButton);
     }
     isMenuAsked() {
         return this.kb && this.kb.isDown(this.keyCodeMenu);
+    }
+    isMouseButtonDown(button) {
+        switch (button) {
+            case 'LB':
+                return this.game.input.activePointer.leftButton.isDown;
+            case 'RB':
+                return this.game.input.activePointer.rightButton.isDown;
+            default:
+                return false;
+        }
     }
 }
 exports.KeyboardAndMouseControls = KeyboardAndMouseControls;
@@ -1776,7 +1820,7 @@ class PadControls extends AbstractControls {
                 this.pad = pad;
                 let layout = {};
                 try {
-                    layout = JSON.parse(localStorage.getItem('gamepad.' + GamepadUtils_1.GamepadUtils.gamepadId(this.pad) + '.layout')) || {};
+                    layout = JSON.parse(localStorage.getItem('bomberned.gamepad.' + GamepadUtils_1.GamepadUtils.gamepadId(this.pad) + '.layout')) || {};
                 }
                 catch (e) {
                     layout = {};
