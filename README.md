@@ -1,2 +1,2 @@
-# play.bci.im
+# play.devnewton.fr
 Online gaming website
